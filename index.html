@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-HK" class="h-full bg-[#FDF2F8] text-[#3D001E]">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1441,7 +1442,7 @@
     function loadStorageData(key, fallback) {
       const stored = localStorage.getItem('brewcraft_vbean_38_' + key);
       if (!stored) {
-        localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(fallback));
+        localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(fallback));saveToCloud(currentData);
         return fallback;
       }
       try {
@@ -1452,12 +1453,16 @@
     }
 
     function saveStorageData(key, data) {
-      localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(data));
-    }
+    localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(data));
 
-    let beans = loadStorageData('beans', defaultBeans);
-    let brews = loadStorageData('brews', defaultBrews);
-    let gears = loadStorageData('gears', defaultGears);
+    if (typeof saveToCloud === 'function') {
+        saveToCloud({
+            beans: loadStorageData('beans', defaultBeans),
+            brews: loadStorageData('brews', defaultBrews),
+            gears: loadStorageData('gears', defaultGears)
+        });
+    }
+}
 
     // Toast Notification Banner
     function showToast(msg) {
@@ -2178,5 +2183,34 @@
       navigateTo('home');
     });
   </script>
+<script>
+  const SUPABASE_URL = 'https://lozjdspcjwkozfuwcxdt.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_Eo9i0WL-Ea3LwoLghTjg8g_FCB3QgOo';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function saveToCloud(data) {
+    try {
+      await supabaseClient
+        .from('coffee_inventory')
+        .upsert({ id: 1, data: data });
+    } catch (err) {
+      console.error('Cloud sync error:', err);
+    }
+  }
+
+  supabaseClient
+    .channel('public:coffee_inventory')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'coffee_inventory' }, payload => {
+      if (payload.new && payload.new.data) {
+        const cloud = payload.new.data;
+        if (cloud.beans) localStorage.setItem('brewcraft_vbean_38_beans', JSON.stringify(cloud.beans));
+        if (cloud.brews) localStorage.setItem('brewcraft_vbean_38_brews', JSON.stringify(cloud.brews));
+        if (cloud.gears) localStorage.setItem('brewcraft_vbean_38_gears', JSON.stringify(cloud.gears));
+        location.reload();
+      }
+    })
+    .subscribe();
+</script>
+</body>
 </body>
 </html>
