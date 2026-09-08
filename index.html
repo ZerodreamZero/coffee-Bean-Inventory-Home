@@ -272,7 +272,7 @@
               </div>
               <div>
                 <span class="text-[10px] font-black text-fuchsia-600 uppercase tracking-wider block">3. 裝備清單</span>
-                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-fuchsia-600 transition-colors">磨豆機與器具備忘</h4>
+                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-fuchsia-600 transition-colors">磨豆機與器材備忘</h4>
                 <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">刻度記錄與保養卡</p>
               </div>
             </button>
@@ -1417,192 +1417,160 @@
     const discoveryBeans = [
       {
         id: 'd1',
-        name: '肯亞 涅里 蜂鳥 G1 頂級水洗',
-        roaster: 'ONIBUS COFFEE Tokyo',
-        origin: '肯亞 Nyeri',
+        name: '埃塞俄比亞 耶加雪菲 烏拉嘎 G1',
+        roaster: 'Kurasu Kyoto',
+        origin: '埃塞俄比亞 Guji Uraga',
         process: '水洗 Washed',
-        roast: '中淺烘焙 Medium-Light',
-        price: 190,
-        notes: '黑加侖子, 烏梅, 葡萄柚酸質, 紅茶餘韻',
-        description: '東京人氣名店 ONIBUS 招牌選豆，極致鮮明活潑的果酸層次感。'
+        roast: '淺度烘焙 Light',
+        weight: 200,
+        price: 210,
+        notes: '黃檸檬, 茉莉花香, 白桃甜感, 伯爵茶餘韻',
+        flavor: { aroma: 4.9, acidity: 4.7, sweetness: 4.5, body: 3.1, finish: 4.6 }
       },
       {
         id: 'd2',
-        name: '哥斯達黎加 璀璨莊園 珍稀黃蜜',
-        roaster: 'St. Ali Melbourne',
-        origin: '哥斯達黎加 Tarrazu',
-        process: '蜜處理 Honey',
+        name: '哥倫比亞 玫瑰茶批次 雙重厭氧',
+        roaster: 'Glitch Coffee Roasters',
+        origin: '哥倫比亞 El Paraiso',
+        process: 'Double Anaerobic Washed',
+        roast: '極淺烘焙 Very Light',
+        weight: 150,
+        price: 330,
+        notes: '大馬士革玫瑰, 草莓牛奶, 荔枝果凍',
+        flavor: { aroma: 5.0, acidity: 4.6, sweetness: 4.9, body: 3.3, finish: 4.8 }
+      },
+      {
+        id: 'd3',
+        name: '肯亞 Nyeri Hill AA',
+        roaster: 'Market Lane Coffee',
+        origin: '肯亞 Nyeri',
+        process: '雙重水洗 Double Washed',
         roast: '淺度烘焙 Light',
-        price: 210,
-        notes: '黃桃, 焦糖, 烤杏仁, 蘋果酸',
-        description: '墨爾本精品咖啡先驅嚴選，溫潤滑順的蜜糖甜感與堅果餘香。'
+        weight: 250,
+        price: 240,
+        notes: '黑加侖子, 鮮榨葡萄柚, 蔗糖甜美',
+        flavor: { aroma: 4.7, acidity: 4.8, sweetness: 4.4, body: 3.6, finish: 4.5 }
+      },
+      {
+        id: 'd4',
+        name: '巴拿馬 翡翠莊園 綠標 藝妓',
+        roaster: 'ST. ALI Melbourne',
+        origin: '巴拿馬 Boquete',
+        process: '日曬 Natural',
+        roast: '淺度烘焙 Light',
+        weight: 100,
+        price: 450,
+        notes: '佛手柑, 柑橘花, 冰糖雪黎, 佛手柑紅茶',
+        flavor: { aroma: 5.0, acidity: 4.8, sweetness: 4.9, body: 3.4, finish: 5.0 }
       }
     ];
 
-    function loadStorageData(key, fallback) {
-      const stored = localStorage.getItem('brewcraft_vbean_38_' + key);
-      if (!stored) {
-        localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(fallback));saveToCloud(currentData);
-        return fallback;
-      }
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        return fallback;
-      }
+    // LocalStorage Initializers
+    let beans = JSON.parse(localStorage.getItem('brewcraft_beans')) || defaultBeans;
+    let brews = JSON.parse(localStorage.getItem('brewcraft_brews')) || defaultBrews;
+    let gears = JSON.parse(localStorage.getItem('brewcraft_gears')) || defaultGears;
+
+    function saveData() {
+      localStorage.setItem('brewcraft_beans', JSON.stringify(beans));
+      localStorage.setItem('brewcraft_brews', JSON.stringify(brews));
+      localStorage.setItem('brewcraft_gears', JSON.stringify(gears));
     }
 
-    function saveStorageData(key, data) {
-    localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(data));
+    // Navigation Logic
+    function navigateTo(view) {
+      currentView = view;
+      const views = ['home', 'beans', 'brews', 'gear', 'discover'];
+      
+      views.forEach(v => {
+        const el = document.getElementById(v === 'home' ? 'view-home' : `tab-${v}`);
+        const navBtn = document.getElementById(`nav-btn-${v}`);
+        
+        if (v === view) {
+          el.classList.remove('hidden');
+          if (navBtn) {
+            navBtn.classList.add('text-pinkapp-600');
+            navBtn.classList.remove('text-pinkapp-300');
+          }
+        } else {
+          el.classList.add('hidden');
+          if (navBtn) {
+            navBtn.classList.remove('text-pinkapp-600');
+            navBtn.classList.add('text-pinkapp-300');
+          }
+        }
+      });
 
-    if (typeof saveToCloud === 'function') {
-        saveToCloud({
-            beans: loadStorageData('beans', defaultBeans),
-            brews: loadStorageData('brews', defaultBrews),
-            gears: loadStorageData('gears', defaultGears)
-        });
+      const backBtn = document.getElementById('global-back-btn');
+      const quickAddText = document.getElementById('quick-add-btn-text');
+      
+      if (view === 'home') {
+        backBtn.classList.add('hidden');
+        quickAddText.textContent = '新增紀錄';
+      } else {
+        backBtn.classList.remove('hidden');
+        if (view === 'beans') quickAddText.textContent = '新增咖啡豆';
+        else if (view === 'brews') quickAddText.textContent = '新增日誌';
+        else if (view === 'gear') quickAddText.textContent = '新增裝備';
+        else quickAddText.textContent = '新增紀錄';
+      }
+
+      window.scrollTo(0, 0);
     }
-}
 
-    // Toast Notification Banner
+    function handleHeaderQuickAdd() {
+      if (currentView === 'beans') openBeanModal();
+      else if (currentView === 'brews') openBrewModal();
+      else if (currentView === 'gear') openGearModal();
+      else openBrewModal();
+    }
+
+    // Toast Notification
     function showToast(msg) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toast-msg');
       toastMsg.textContent = msg;
       toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
-      toast.classList.add('opacity-100', 'translate-y-0');
       setTimeout(() => {
-        toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
       }, 2500);
     }
 
-    function navigateTo(targetView) {
-      currentView = targetView;
-
-      const views = ['home', 'beans', 'brews', 'gear', 'discover'];
-      views.forEach(v => {
-        const el = document.getElementById(v === 'home' ? 'view-home' : 'tab-' + v);
-        if (el) el.classList.add('hidden');
-      });
-
-      const targetEl = document.getElementById(targetView === 'home' ? 'view-home' : 'tab-' + targetView);
-      if (targetEl) targetEl.classList.remove('hidden');
-
-      const backBtn = document.getElementById('global-back-btn');
-      const headerTitle = document.getElementById('header-title');
-      const headerSubtitle = document.getElementById('header-subtitle');
-      const quickBtnText = document.getElementById('quick-add-btn-text');
-
-      if (targetView === 'home') {
-        backBtn.classList.add('hidden');
-        headerTitle.innerHTML = `BrewCraft ✨ <span class="text-[9px] font-sans font-black uppercase tracking-widest bg-pinkapp-500 text-white px-2 py-0.5 rounded-full shadow-sm">Gen Alpha</span>`;
-        headerSubtitle.textContent = '🌸 Pink Aesthetic Coffee Stash';
-        quickBtnText.textContent = '新增紀錄';
-      } else {
-        backBtn.classList.remove('hidden');
-        if (targetView === 'beans') {
-          headerTitle.innerHTML = `粉紅豆櫃庫存 <span class="text-[10px] text-pinkapp-600 font-sans font-bold">(${beans.length})</span>`;
-          headerSubtitle.textContent = '返回首頁 ➔ 特選咖啡豆單';
-          quickBtnText.textContent = '新增咖啡豆';
-        } else if (targetView === 'brews') {
-          headerTitle.innerHTML = `黃金比例與日誌`;
-          headerSubtitle.textContent = '返回首頁 ➔ 沖煮淬鍊歷程';
-          quickBtnText.textContent = '新增日誌';
-        } else if (targetView === 'gear') {
-          headerTitle.innerHTML = `咖啡裝備與研磨卡`;
-          headerSubtitle.textContent = '返回首頁 ➔ 裝備與刻度';
-          quickBtnText.textContent = '新增裝備';
-        } else if (targetView === 'discover') {
-          headerTitle.innerHTML = `特選新豆推薦`;
-          headerSubtitle.textContent = '返回首頁 ➔ 探索名店嚴選';
-          quickBtnText.textContent = '探索新豆';
-        }
-      }
-
-      // Update Nav Buttons active class
-      const navButtons = ['home', 'beans', 'brews', 'gear', 'discover'];
-      navButtons.forEach(b => {
-        const btn = document.getElementById('nav-btn-' + b);
-        if (btn) {
-          if (b === targetView) {
-            btn.className = "nav-item flex flex-col items-center gap-0.5 text-pinkapp-600 font-bold py-1 px-2";
-          } else {
-            btn.className = "nav-item flex flex-col items-center gap-0.5 text-pinkapp-300 hover:text-pinkapp-600 transition-colors py-1 px-2 font-bold";
-          }
-        }
-      });
-
-      lucide.createIcons();
-      updateHomeStats();
-      renderBeansList();
-      renderBrewsList();
-      renderGearList();
-      renderDiscoveriesList();
-      populateBeanOptions();
-
-      document.getElementById('main-content').scrollTop = 0;
+    // Modal Operations
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      const card = document.getElementById(`${id}-card`);
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      card.classList.remove('translate-y-full');
     }
 
-    function handleHeaderQuickAdd() {
-      if (currentView === 'beans' || currentView === 'home') {
-        openBeanModal();
-      } else if (currentView === 'brews') {
-        openBrewModal();
-      } else if (currentView === 'gear') {
-        openGearModal();
-      } else if (currentView === 'discover') {
-        showToast('請點擊下方推薦豆單嘅「+ 加入豆櫃」即可收藏！🌸');
-      }
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      const card = document.getElementById(`${id}-card`);
+      card.classList.add('translate-y-full');
+      setTimeout(() => {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }, 200);
     }
 
-    function updateHomeStats() {
-      document.getElementById('home-stat-beans').textContent = `${beans.length} 款`;
-      document.getElementById('home-stat-brews').textContent = `${brews.length} 次`;
-      document.getElementById('home-stat-gears').textContent = `${gears.length} 件`;
-
-      const container = document.getElementById('home-recent-brews-container');
-      if (brews.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white border border-pinkapp-200 rounded-3xl p-4 text-center text-xs text-pinkapp-400 font-medium">
-            尚未有沖煮紀錄，點擊「新增紀錄」寫下第一杯 Sparkle Drip ✨
-          </div>
-        `;
-        return;
-      }
-
-      const recent = brews.slice(0, 2);
-      container.innerHTML = recent.map(b => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-3.5 shadow-soft-card flex justify-between items-center text-xs">
-          <div class="space-y-0.5">
-            <span class="text-[9px] text-pinkapp-600 font-bold uppercase tracking-wider">${b.method} • ${b.ratio}</span>
-            <h4 class="font-bold text-pinkapp-900 line-clamp-1 font-title">${b.beanName}</h4>
-            <p class="text-[10px] text-pinkapp-600/70 font-medium line-clamp-1">${b.notes || '10/10 Perfect Drip 💖'}</p>
-          </div>
-          <div class="text-right shrink-0 ml-2">
-            <span class="text-xs text-pinkapp-500 font-bold">${'★'.repeat(b.score)}</span>
-            <span class="text-[9px] text-pinkapp-400 font-bold block mt-0.5">${b.timestamp.split(' ')[0]}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
+    // Bean Stash Handlers
     function setBeanFilter(filter) {
       beanFilter = filter;
       document.querySelectorAll('.bean-filter-pill').forEach(btn => {
-        btn.className = "bean-filter-pill bg-white border border-pinkapp-200 text-pinkapp-700 px-3 py-1 rounded-xl font-bold text-[11px] transition-all";
+        btn.classList.remove('bg-pinkapp-600', 'text-white');
+        btn.classList.add('bg-white', 'text-pinkapp-700', 'border', 'border-pinkapp-200');
       });
-      const activeBtn = document.getElementById('bean-filter-' + filter);
+      const activeBtn = document.getElementById(`bean-filter-${filter}`);
       if (activeBtn) {
-        activeBtn.className = "bean-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl font-bold text-[11px] transition-all";
+        activeBtn.classList.remove('bg-white', 'text-pinkapp-700', 'border', 'border-pinkapp-200');
+        activeBtn.classList.add('bg-pinkapp-600', 'text-white');
       }
       renderBeansList();
     }
 
     function renderBeansList() {
-      const container = document.getElementById('beans-list-container');
-      const search = document.getElementById('bean-search-input').value.toLowerCase().trim();
+      const search = document.getElementById('bean-search-input').value.toLowerCase();
       const sort = document.getElementById('bean-sort-select').value;
+      const container = document.getElementById('beans-list-container');
 
       let filtered = beans.filter(b => {
         const matchesSearch = b.name.toLowerCase().includes(search) || 
@@ -1610,238 +1578,306 @@
                               (b.origin && b.origin.toLowerCase().includes(search));
         
         if (!matchesSearch) return false;
-
-        if (beanFilter === 'LIGHT') return b.roast.includes('淺') || b.roast.includes('Very Light') || b.roast.includes('Light');
-        if (beanFilter === 'MEDIUM') return b.roast.includes('中') || b.roast.includes('Medium');
-        if (beanFilter === 'DARK') return b.roast.includes('深') || b.roast.includes('Dark');
+        if (beanFilter === 'LIGHT') return b.roast.includes('淺');
+        if (beanFilter === 'MEDIUM') return b.roast.includes('中');
+        if (beanFilter === 'DARK') return b.roast.includes('深');
         return true;
       });
 
       if (sort === 'weight-desc') filtered.sort((a,b) => b.weight - a.weight);
-      if (sort === 'weight-asc') filtered.sort((a,b) => a.weight - b.weight);
+      else if (sort === 'weight-asc') filtered.sort((a,b) => a.weight - b.weight);
 
-      const totalWeight = beans.reduce((acc, b) => acc + Number(b.weight || 0), 0);
-      const uniqueRoasters = new Set(beans.map(b => b.roaster).filter(Boolean)).size;
-      
+      // Update Header Stats
       document.getElementById('stat-bean-count').textContent = `${beans.length} 款`;
+      document.getElementById('home-stat-beans').textContent = `${beans.length} 款`;
+      const totalWeight = beans.reduce((acc, curr) => acc + (Number(curr.weight) || 0), 0);
       document.getElementById('stat-bean-weight').textContent = `${totalWeight} g`;
-      document.getElementById('stat-bean-roasters').textContent = `${uniqueRoasters} 家`;
+      const roastersCount = new Set(beans.map(b => b.roaster).filter(Boolean)).size;
+      document.getElementById('stat-bean-roasters').textContent = `${roastersCount} 家`;
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-white/70 border border-dashed border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400 space-y-2">
-            <i data-lucide="sparkles" class="w-8 h-8 mx-auto text-pinkapp-300"></i>
-            <p>未找到符合條件的咖啡豆 🌸</p>
+          <div class="bg-white rounded-3xl p-8 text-center space-y-2 border border-pinkapp-100">
+            <i data-lucide="package-open" class="w-10 h-10 text-pinkapp-300 mx-auto"></i>
+            <p class="text-xs font-bold text-pinkapp-700">未有符合條件嘅咖啡豆</p>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      container.innerHTML = filtered.map(b => {
-        const f = b.flavor || { aroma: 4, acidity: 4, sweetness: 4, body: 3, finish: 4 };
-        const lowStock = b.weight <= 30;
-
-        return `
-          <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card hover:shadow-pink-glow transition-all space-y-3 relative overflow-hidden">
-            <div class="flex justify-between items-start gap-2">
-              <div>
-                <div class="flex items-center gap-1.5 mb-1 flex-wrap">
-                  <span class="text-[9px] font-bold uppercase tracking-widest bg-pinkapp-100 text-pinkapp-800 px-2 py-0.5 rounded-full border border-pinkapp-200/60">${b.process || '水洗'}</span>
-                  <span class="text-[9px] font-bold uppercase tracking-widest bg-pinkapp-500/10 text-pinkapp-600 px-2 py-0.5 rounded-full border border-pinkapp-500/20">${b.roast || '淺度烘焙'}</span>
-                  ${lowStock ? '<span class="text-[9px] font-black uppercase tracking-widest bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">💖 庫存告急</span>' : ''}
-                </div>
-                <h3 class="text-sm font-bold font-title text-pinkapp-900 leading-snug">${b.name}</h3>
-                <p class="text-[11px] text-pinkapp-600/80 font-medium">${b.roaster ? b.roaster + ' • ' : ''}${b.origin || ''}</p>
+      container.innerHTML = filtered.map(b => `
+        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-3 relative overflow-hidden group">
+          <div class="flex justify-between items-start">
+            <div class="space-y-1 pr-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] font-black uppercase tracking-wider bg-pinkapp-100 text-pinkapp-700 px-2 py-0.5 rounded-full">${b.roast || '特選烘焙'}</span>
+                <span class="text-[9px] font-bold text-pinkapp-500">${b.process || ''}</span>
               </div>
-
-              <div class="text-right shrink-0">
-                <span class="text-base font-extrabold font-title ${lowStock ? 'text-rose-600' : 'text-pinkapp-600'} block">${b.weight} g</span>
-                <span class="text-[9px] text-pinkapp-400 font-bold">剩餘量</span>
-              </div>
+              <h3 class="text-sm font-bold font-title text-pinkapp-900 leading-snug">${b.name}</h3>
+              <p class="text-[10px] text-pinkapp-600 font-semibold">🏠 ${b.roaster || '精品烘焙'} • 📍 ${b.origin || '國際產區'}</p>
             </div>
-
-            ${b.notes ? `
-              <div class="flex flex-wrap gap-1 pt-0.5">
-                ${b.notes.split(/[,、]/).map(n => `<span class="text-[10px] bg-pinkapp-50 text-pinkapp-800 border border-pinkapp-200/80 px-2 py-0.5 rounded-xl font-bold">${n.trim()}</span>`).join('')}
-              </div>
-            ` : ''}
-
-            <!-- Mini Flavor Profile Bar -->
-            <div class="bg-pinkapp-50/80 rounded-2xl p-2.5 border border-pinkapp-200/60 grid grid-cols-5 gap-1 text-center text-[9px] text-pinkapp-800 font-bold">
-              <div><span class="block text-pinkapp-400">香氣</span><span class="font-black text-pinkapp-600">${f.aroma}</span></div>
-              <div><span class="block text-pinkapp-400">酸度</span><span class="font-black text-pinkapp-600">${f.acidity}</span></div>
-              <div><span class="block text-pinkapp-400">甜度</span><span class="font-black text-pinkapp-600">${f.sweetness}</span></div>
-              <div><span class="block text-pinkapp-400">醇厚</span><span class="font-black text-pinkapp-600">${f.body}</span></div>
-              <div><span class="block text-pinkapp-400">餘韻</span><span class="font-black text-pinkapp-600">${f.finish}</span></div>
+            
+            <div class="text-right shrink-0">
+              <span class="text-sm font-black font-title ${b.weight < 30 ? 'text-rose-500' : 'text-pinkapp-900'}">${b.weight}g</span>
+              <span class="text-[9px] text-pinkapp-400 block">剩餘庫存</span>
             </div>
-
-            <div class="flex justify-between items-center pt-2 border-t border-pinkapp-100 text-[11px]">
-              <span class="text-[10px] text-pinkapp-400 font-medium">日期: ${b.date || '未標註'}</span>
-              <div class="flex items-center gap-2">
-                <button onclick="quickDeductBean('${b.id}')" class="text-pinkapp-600 hover:text-pinkapp-800 font-bold px-2.5 py-0.5 rounded-xl bg-pinkapp-100 hover:bg-pinkapp-200 transition-all">
-                  -15g 沖煮 ✨
-                </button>
-                <button onclick="deleteBean('${b.id}')" class="text-rose-400 hover:text-rose-600 p-1">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-
           </div>
-        `;
-      }).join('');
+
+          ${b.notes ? `
+            <div class="bg-pinkapp-50/60 p-2 rounded-2xl border border-pinkapp-100/80">
+              <p class="text-[10px] text-pinkapp-800 font-medium">🌸 風味：${b.notes}</p>
+            </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between pt-2 border-t border-pinkapp-100 text-[10px]">
+            <span class="text-pinkapp-400 font-medium">進豆日期: ${b.date || '最近'}</span>
+            <div class="flex gap-2">
+              <button onclick="editBean('${b.id}')" class="text-pinkapp-600 font-bold hover:underline">編輯</button>
+              <button onclick="deleteBean('${b.id}')" class="text-rose-500 font-bold hover:underline">刪除</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
 
       lucide.createIcons();
     }
 
-    function quickDeductBean(id) {
-      const bean = beans.find(b => b.id === id);
-      if (bean) {
-        if (bean.weight < 15) {
-          showToast('咖啡豆剩餘量不足 15g 囉！🌸');
-          return;
-        }
-        bean.weight -= 15;
-        saveStorageData('beans', beans);
-        renderBeansList();
-        updateHomeStats();
-        showToast(`已扣除 15g [${bean.name}] ✨`);
-      }
-    }
-
-    function deleteBean(id) {
-      beans = beans.filter(b => b.id !== id);
-      saveStorageData('beans', beans);
-      renderBeansList();
-      updateHomeStats();
-      showToast('已移除咖啡豆數據');
-    }
-
-    function openBeanModal() {
+    function openBeanModal(id = null) {
       document.getElementById('form-bean').reset();
       document.getElementById('bean-id').value = '';
-      document.getElementById('modal-bean-title').textContent = '🌸 新增咖啡豆至粉紅豆櫃';
-      
-      const modal = document.getElementById('modal-bean');
-      const card = document.getElementById('modal-bean-card');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      card.classList.remove('translate-y-full');
-    }
+      document.getElementById('modal-bean-title').textContent = id ? '🌸 編輯咖啡豆資料' : '🌸 新增咖啡豆至粉紅豆櫃';
 
-    function closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      const card = document.getElementById(modalId + '-card');
-      if (card) card.classList.add('translate-y-full');
-      setTimeout(() => {
-        if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
-      }, 200);
+      if (id) {
+        const b = beans.find(x => x.id === id);
+        if (b) {
+          document.getElementById('bean-id').value = b.id;
+          document.getElementById('input-bean-name').value = b.name;
+          document.getElementById('input-bean-roaster').value = b.roaster || '';
+          document.getElementById('input-bean-origin').value = b.origin || '';
+          document.getElementById('input-bean-process').value = b.process || '水洗 Washed';
+          document.getElementById('input-bean-roast').value = b.roast || '淺度烘焙 Light';
+          document.getElementById('input-bean-weight').value = b.weight;
+          document.getElementById('input-bean-date').value = b.date || '';
+          document.getElementById('input-bean-price').value = b.price || '';
+          document.getElementById('input-bean-notes').value = b.notes || '';
+        }
+      }
+
+      openModal('modal-bean');
     }
 
     function saveBeanForm(e) {
       e.preventDefault();
-      const newBean = {
-        id: 'b_' + Date.now(),
-        name: document.getElementById('input-bean-name').value,
-        roaster: document.getElementById('input-bean-roaster').value,
-        origin: document.getElementById('input-bean-origin').value,
-        process: document.getElementById('input-bean-process').value,
-        roast: document.getElementById('input-bean-roast').value,
-        weight: Number(document.getElementById('input-bean-weight').value || 0),
-        date: document.getElementById('input-bean-date').value,
-        price: Number(document.getElementById('input-bean-price').value || 0),
-        notes: document.getElementById('input-bean-notes').value,
-        flavor: {
-          aroma: Number(document.getElementById('flavor-aroma').value),
-          acidity: Number(document.getElementById('flavor-acidity').value),
-          sweetness: Number(document.getElementById('flavor-sweetness').value),
-          body: Number(document.getElementById('flavor-body').value),
-          finish: Number(document.getElementById('flavor-finish').value)
-        }
+      const id = document.getElementById('bean-id').value;
+      const name = document.getElementById('input-bean-name').value.trim();
+      const roaster = document.getElementById('input-bean-roaster').value.trim();
+      const origin = document.getElementById('input-bean-origin').value.trim();
+      const process = document.getElementById('input-bean-process').value;
+      const roast = document.getElementById('input-bean-roast').value;
+      const weight = Number(document.getElementById('input-bean-weight').value);
+      const date = document.getElementById('input-bean-date').value;
+      const price = Number(document.getElementById('input-bean-price').value) || 0;
+      const notes = document.getElementById('input-bean-notes').value.trim();
+
+      const flavor = {
+        aroma: Number(document.getElementById('flavor-aroma').value),
+        acidity: Number(document.getElementById('flavor-acidity').value),
+        sweetness: Number(document.getElementById('flavor-sweetness').value),
+        body: Number(document.getElementById('flavor-body').value),
+        finish: Number(document.getElementById('flavor-finish').value)
       };
 
-      beans.unshift(newBean);
-      saveStorageData('beans', beans);
-      closeModal('modal-bean');
+      if (id) {
+        const idx = beans.findIndex(b => b.id === id);
+        if (idx !== -1) {
+          beans[idx] = { id, name, roaster, origin, process, roast, weight, date, price, notes, flavor };
+        }
+      } else {
+        const newBean = {
+          id: 'b_' + Date.now(),
+          name, roaster, origin, process, roast, weight, date, price, notes, flavor
+        };
+        beans.unshift(newBean);
+      }
+
+      saveData();
       renderBeansList();
-      updateHomeStats();
-      populateBeanOptions();
-      showToast('咖啡豆已成功加入豆櫃！💖');
+      populateBeanSelects();
+      closeModal('modal-bean');
+      showToast('咖啡豆已成功保存 💖');
     }
 
-    function populateBeanOptions() {
-      const selectRecommend = document.getElementById('recommend-bean-select');
-      const selectBrew = document.getElementById('input-brew-bean');
-      
-      const optionsHtml = beans.length === 0 
-        ? '<option value="">(豆櫃目前無咖啡豆)</option>' 
-        : beans.map(b => `<option value="${b.id}">${b.name} (存量: ${b.weight}g)</option>`).join('');
-      
-      if (selectRecommend) selectRecommend.innerHTML = optionsHtml;
-      if (selectBrew) selectBrew.innerHTML = optionsHtml;
+    function editBean(id) {
+      openBeanModal(id);
+    }
+
+    function deleteBean(id) {
+      if (confirm('確定要刪除呢款咖啡豆嗎？')) {
+        beans = beans.filter(b => b.id !== id);
+        saveData();
+        renderBeansList();
+        populateBeanSelects();
+        showToast('咖啡豆已成功刪除');
+      }
+    }
+
+    // Recommendation & Golden Ratio
+    function populateBeanSelects() {
+      const recSelect = document.getElementById('recommend-bean-select');
+      const brewSelect = document.getElementById('input-brew-bean');
+
+      if (!recSelect || !brewSelect) return;
+
+      const optionsHTML = beans.map(b => `<option value="${b.id}">${b.name} (${b.weight}g)</option>`).join('');
+      recSelect.innerHTML = optionsHTML || '<option value="">未有咖啡豆庫存</option>';
+      brewSelect.innerHTML = optionsHTML || '<option value="">未有咖啡豆庫存</option>';
 
       generateBrewRecommendation();
     }
 
     function generateBrewRecommendation() {
-      const select = document.getElementById('recommend-bean-select');
-      const resultBox = document.getElementById('recommendation-result');
-      
-      if (!select || !select.value || beans.length === 0) {
-        resultBox.classList.add('hidden');
+      const beanId = document.getElementById('recommend-bean-select').value;
+      const resultDiv = document.getElementById('recommendation-result');
+      const bean = beans.find(b => b.id === beanId);
+
+      if (!bean) {
+        resultDiv.innerHTML = `<p class="text-white/80 font-medium">請先新增咖啡豆以計算黃金粉水比。</p>`;
         return;
       }
 
-      const bean = beans.find(b => b.id === select.value);
-      if (!bean) return;
+      const isLight = bean.roast.includes('淺');
+      const isDark = bean.roast.includes('深');
+      
+      const temp = isLight ? '92-94°C' : (isDark ? '86-88°C' : '89-91°C');
+      const ratio = isLight ? '1 : 16.0' : '1 : 15.0';
+      const dose = 15;
+      const water = isLight ? 240 : 225;
 
-      let temp = 92;
-      let ratio = '1:16.0';
-      let grind = 'C40 24咔 / 中細研磨';
-      let advice = '建議三段式注水，悶蒸 30 秒釋放高頻花果甜香。';
+      resultDiv.innerHTML = `
+        <div class="grid grid-cols-3 gap-2 text-center my-1">
+          <div class="bg-white/20 p-1.5 rounded-xl">
+            <span class="block text-[9px] text-pink-100">粉量 / 水量</span>
+            <span class="font-bold text-white text-xs">${dose}g / ${water}g</span>
+          </div>
+          <div class="bg-white/20 p-1.5 rounded-xl">
+            <span class="block text-[9px] text-pink-100">建議水溫</span>
+            <span class="font-bold text-white text-xs">${temp}</span>
+          </div>
+          <div class="bg-white/20 p-1.5 rounded-xl">
+            <span class="block text-[9px] text-pink-100">粉水比</span>
+            <span class="font-bold text-white text-xs">${ratio}</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-pink-100 leading-tight mt-1">
+          💡 <strong>注水法：</strong> 悶蒸 ${dose * 2}g 水 (30秒) ➔ 慢速注水至 ${Math.round(water * 0.6)}g ➔ 尾段段注至 ${water}g 止水。
+        </p>
+      `;
+    }
 
-      if (bean.roast.includes('極淺') || bean.roast.includes('Very Light')) {
-        temp = 94;
-        ratio = '1:15.0';
-        grind = 'C40 22咔 / 細研磨';
-        advice = '極淺烘焙豆質堅硬，建議高水溫搭配細研磨提高萃取率。';
-      } else if (bean.roast.includes('深') || bean.roast.includes('Dark')) {
-        temp = 88;
-        ratio = '1:14.0';
-        grind = 'C40 27咔 / 中粗研磨';
-        advice = '深烘焙豆易過萃，建議較低水溫及粗研磨以避免苦澀。';
+    // Brew Log Handlers
+    function renderBrewsList() {
+      const search = document.getElementById('brew-search-input').value.toLowerCase();
+      const sort = document.getElementById('brew-sort-select').value;
+      const container = document.getElementById('brews-list-container');
+      const homeContainer = document.getElementById('home-recent-brews-container');
+
+      let filtered = brews.filter(br => 
+        br.beanName.toLowerCase().includes(search) || 
+        (br.notes && br.notes.toLowerCase().includes(search))
+      );
+
+      if (sort === 'score-desc') filtered.sort((a,b) => b.score - a.score);
+
+      document.getElementById('brew-count-badge').textContent = brews.length;
+      document.getElementById('home-stat-brews').textContent = `${brews.length} 次`;
+
+      // Home Recent Render
+      if (homeContainer) {
+        if (brews.length === 0) {
+          homeContainer.innerHTML = `<p class="text-xs text-pinkapp-500 text-center py-2 font-medium">未有沖煮紀錄，即刻開始第一次萃取！✨</p>`;
+        } else {
+          homeContainer.innerHTML = brews.slice(0, 2).map(br => `
+            <div class="bg-white border border-pinkapp-200/80 rounded-2xl p-3 shadow-soft-card flex justify-between items-center">
+              <div>
+                <h4 class="text-xs font-bold font-title text-pinkapp-900">${br.beanName}</h4>
+                <p class="text-[10px] text-pinkapp-600">${br.method} • ${br.dose}g:${br.water}g (${br.temp}°C)</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-amber-400 font-black">★ ${br.score}.0</span>
+                <span class="text-[9px] text-pinkapp-400 block">${br.timestamp.split(' ')[0]}</span>
+              </div>
+            </div>
+          `).join('');
+        }
       }
 
-      resultBox.classList.remove('hidden');
-      resultBox.innerHTML = `
-        <div class="grid grid-cols-3 gap-2 text-center border-b border-white/20 pb-2 mb-2 font-bold">
-          <div><span class="text-[9px] text-pink-100 block">黃金水溫</span><span class="font-extrabold text-white">${temp}°C</span></div>
-          <div><span class="text-[9px] text-pink-100 block">粉水比</span><span class="font-extrabold text-white">${ratio}</span></div>
-          <div><span class="text-[9px] text-pink-100 block">研磨粗細</span><span class="font-extrabold text-white text-[10px]">${grind.split('/')[0]}</span></div>
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 text-center space-y-2 border border-pinkapp-100">
+            <i data-lucide="coffee" class="w-10 h-10 text-pinkapp-300 mx-auto"></i>
+            <p class="text-xs font-bold text-pinkapp-700">未有符合條件嘅沖煮紀錄</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(br => `
+        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2.5 relative">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-wider bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full">${br.method}</span>
+              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${br.beanName}</h3>
+            </div>
+            <div class="text-right">
+              <div class="text-amber-400 text-xs font-black">
+                ${'★'.repeat(br.score)}${'☆'.repeat(5 - br.score)}
+              </div>
+              <span class="text-[9px] text-pinkapp-400">${br.timestamp}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 bg-pinkapp-50/70 p-2 rounded-2xl text-center text-[10px]">
+            <div><span class="text-pinkapp-400 block">粉量</span><span class="font-extrabold text-pinkapp-900">${br.dose}g</span></div>
+            <div><span class="text-pinkapp-400 block">水量</span><span class="font-extrabold text-pinkapp-900">${br.water}g</span></div>
+            <div><span class="text-pinkapp-400 block">水溫</span><span class="font-extrabold text-pinkapp-900">${br.temp}°C</span></div>
+            <div><span class="text-pinkapp-400 block">刻度</span><span class="font-extrabold text-pinkapp-900">${br.grind || '預設'}</span></div>
+          </div>
+
+          ${br.notes ? `
+            <p class="text-[11px] text-pinkapp-800 font-medium bg-white border border-pinkapp-100 p-2 rounded-xl">${br.notes}</p>
+          ` : ''}
+
+          <div class="flex justify-end pt-1">
+            <button onclick="deleteBrew('${br.id}')" class="text-[10px] text-rose-500 font-bold hover:underline">刪除紀錄</button>
+          </div>
         </div>
-        <p class="text-[10px] text-pink-100 font-medium leading-relaxed"><i data-lucide="sparkles" class="w-3 h-3 inline mr-1 text-pink-200"></i>${advice}</p>
-      `;
+      `).join('');
+
       lucide.createIcons();
     }
 
     function autoCalcRatio() {
-      const dose = Number(document.getElementById('input-brew-dose').value || 15);
-      const water = Number(document.getElementById('input-brew-water').value || 240);
-      if (dose > 0) {
-        const r = (water / dose).toFixed(1);
-        document.getElementById('input-brew-ratio').value = `1:${r}`;
+      const dose = Number(document.getElementById('input-brew-dose').value) || 0;
+      const water = Number(document.getElementById('input-brew-water').value) || 0;
+      const ratioInput = document.getElementById('input-brew-ratio');
+
+      if (dose > 0 && water > 0) {
+        ratioInput.value = `1:${(water / dose).toFixed(1)}`;
+      } else {
+        ratioInput.value = '1:16.0';
       }
     }
 
     function renderStarRating() {
       const container = document.getElementById('brew-star-rating');
-      if (!container) return;
-      
-      let html = '';
-      for (let i = 1; i <= 5; i++) {
-        html += `<i data-lucide="star" onclick="setStarRating(${i})" class="w-6 h-6 cursor-pointer ${i <= selectedStarScore ? 'text-pinkapp-500 fill-pinkapp-500' : 'text-pinkapp-200'} transition-transform active:scale-125"></i>`;
-      }
-      container.innerHTML = html;
+      container.innerHTML = [1, 2, 3, 4, 5].map(star => `
+        <i data-lucide="star" 
+           onclick="setStarRating(${star})" 
+           class="w-6 h-6 cursor-pointer ${star <= selectedStarScore ? 'text-amber-400 fill-amber-400' : 'text-pinkapp-200'}">
+        </i>
+      `).join('');
       lucide.createIcons();
     }
 
@@ -1852,20 +1888,11 @@
     }
 
     function openBrewModal() {
-      if (beans.length === 0) {
-        showToast('請先新增至少一款咖啡豆！🌸');
-        navigateTo('beans');
-        return;
-      }
       document.getElementById('form-brew').reset();
-      populateBeanOptions();
+      selectedStarScore = 5;
+      renderStarRating();
       autoCalcRatio();
-      setStarRating(5);
-      
-      const modal = document.getElementById('modal-brew');
-      const card = document.getElementById('modal-brew-card');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      card.classList.remove('translate-y-full');
+      openModal('modal-brew');
     }
 
     function saveBrewForm(e) {
@@ -1873,170 +1900,152 @@
       const beanSelect = document.getElementById('input-brew-bean');
       const beanId = beanSelect.value;
       const bean = beans.find(b => b.id === beanId);
-
-      const dose = Number(document.getElementById('input-brew-dose').value || 15);
-
-      const now = new Date();
-      const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      
+      const dose = Number(document.getElementById('input-brew-dose').value);
+      const water = Number(document.getElementById('input-brew-water').value);
 
       const newBrew = {
         id: 'br_' + Date.now(),
-        beanId: beanId,
-        beanName: bean ? bean.name : '未知咖啡豆',
+        beanId,
+        beanName: bean ? bean.name : '特選咖啡豆',
         method: document.getElementById('input-brew-method').value,
-        dose: dose,
-        water: Number(document.getElementById('input-brew-water').value || 240),
-        temp: Number(document.getElementById('input-brew-temp').value || 92),
-        grind: document.getElementById('input-brew-grind').value || '標準研磨',
+        grind: document.getElementById('input-brew-grind').value.trim(),
+        dose,
+        water,
+        temp: Number(document.getElementById('input-brew-temp').value),
         ratio: document.getElementById('input-brew-ratio').value,
         score: selectedStarScore,
-        notes: document.getElementById('input-brew-notes').value,
-        timestamp: timeStr
+        notes: document.getElementById('input-brew-notes').value.trim(),
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
       };
 
+      brews.unshift(newBrew);
+
+      // Deduct weight from inventory
       if (bean) {
         bean.weight = Math.max(0, bean.weight - dose);
-        saveStorageData('beans', beans);
       }
 
-      brews.unshift(newBrew);
-      saveStorageData('brews', brews);
-
-      closeModal('modal-brew');
-      renderBrewsList();
+      saveData();
       renderBeansList();
-      updateHomeStats();
-      showToast('沖煮日誌保存成功！✨');
+      renderBrewsList();
+      closeModal('modal-brew');
+      showToast('沖煮淬鍊日誌已保存 ✨');
     }
 
-    function renderBrewsList() {
-      const container = document.getElementById('brews-list-container');
-      const search = document.getElementById('brew-search-input').value.toLowerCase().trim();
-      const sort = document.getElementById('brew-sort-select').value;
+    function deleteBrew(id) {
+      if (confirm('確定要刪除呢條沖煮紀錄嗎？')) {
+        brews = brews.filter(b => b.id !== id);
+        saveData();
+        renderBrewsList();
+        showToast('日誌已刪除');
+      }
+    }
 
-      document.getElementById('brew-count-badge').textContent = brews.length;
-
-      let filtered = brews.filter(b => {
-        return b.beanName.toLowerCase().includes(search) || 
-               b.method.toLowerCase().includes(search) ||
-               (b.notes && b.notes.toLowerCase().includes(search));
+    // Gear Handlers
+    function setGearFilter(filter) {
+      gearFilter = filter;
+      document.querySelectorAll('.gear-filter-pill').forEach(btn => {
+        btn.classList.remove('bg-pinkapp-600', 'text-white');
+        btn.classList.add('bg-white', 'text-pinkapp-800');
       });
+      const activeBtn = document.getElementById(`gear-filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-pinkapp-800');
+        activeBtn.classList.add('bg-pinkapp-600', 'text-white');
+      }
+      renderGearList();
+    }
 
-      if (sort === 'score-desc') filtered.sort((a,b) => b.score - a.score);
+    function renderGearList() {
+      const container = document.getElementById('gear-list-container');
+      let filtered = gears;
+
+      if (gearFilter !== 'ALL') {
+        filtered = gears.filter(g => g.type === gearFilter);
+      }
+
+      document.getElementById('home-stat-gears').textContent = `${gears.length} 件`;
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-white/70 border border-dashed border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400 font-medium">
-            尚未找到沖煮日誌紀錄 🌸
+          <div class="bg-white rounded-3xl p-8 text-center space-y-2 border border-pinkapp-100">
+            <i data-lucide="wrench" class="w-10 h-10 text-pinkapp-300 mx-auto"></i>
+            <p class="text-xs font-bold text-pinkapp-700">未有符合條件嘅裝備</p>
           </div>
         `;
+        lucide.createIcons();
         return;
       }
 
-      container.innerHTML = filtered.map(b => `
-        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-2.5 relative">
+      container.innerHTML = filtered.map(g => `
+        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[9px] font-bold uppercase tracking-widest bg-pinkapp-500/10 text-pinkapp-600 px-2 py-0.5 rounded-full border border-pinkapp-500/20">${b.method}</span>
-              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${b.beanName}</h3>
+              <span class="text-[9px] font-black uppercase tracking-wider bg-fuchsia-100 text-fuchsia-600 px-2 py-0.5 rounded-full">${g.type}</span>
+              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${g.name}</h3>
+              <p class="text-[10px] text-pinkapp-500 font-semibold">品牌: ${g.brand || '自訂'}</p>
             </div>
-            <div class="text-right">
-              <span class="text-xs text-pinkapp-500 font-bold">${'★'.repeat(b.score)}</span>
-              <span class="text-[9px] text-pinkapp-400 font-bold block">${b.timestamp}</span>
-            </div>
+            <button onclick="deleteGear('${g.id}')" class="text-[10px] text-rose-500 font-bold hover:underline">刪除</button>
           </div>
-
-          <div class="bg-pinkapp-50/80 rounded-2xl p-2.5 border border-pinkapp-200/60 grid grid-cols-4 gap-1 text-center text-[10px] text-pinkapp-800 font-bold">
-            <div><span class="text-pinkapp-400 block font-bold">粉量</span><span class="font-extrabold text-pinkapp-900">${b.dose}g</span></div>
-            <div><span class="text-pinkapp-400 block font-bold">水量</span><span class="font-extrabold text-pinkapp-900">${b.water}g</span></div>
-            <div><span class="text-pinkapp-400 block font-bold">水溫</span><span class="font-extrabold text-pinkapp-900">${b.temp}°C</span></div>
-            <div><span class="text-pinkapp-400 block font-bold">粉水比</span><span class="font-extrabold text-pinkapp-600">${b.ratio}</span></div>
-          </div>
-
-          ${b.notes ? `<p class="text-xs text-pinkapp-800 bg-pinkapp-50/60 p-2.5 rounded-2xl border border-pinkapp-200/40 font-medium">"${b.notes}"</p>` : ''}
-
-          <div class="flex justify-between items-center text-[10px] text-pinkapp-400 font-medium pt-1">
-            <span>研磨: ${b.grind || '未標註'}</span>
-            <button onclick="deleteBrew('${b.id}')" class="text-rose-400 hover:text-rose-600 font-bold">刪除日誌</button>
-          </div>
+          ${g.settingNote ? `
+            <p class="text-[11px] text-pinkapp-800 bg-pinkapp-50 p-2 rounded-xl font-medium">💡 ${g.settingNote}</p>
+          ` : ''}
         </div>
       `).join('');
 
       lucide.createIcons();
     }
 
-    function deleteBrew(id) {
-      brews = brews.filter(b => b.id !== id);
-      saveStorageData('brews', brews);
-      renderBrewsList();
-      updateHomeStats();
-      showToast('沖煮日誌已刪除');
-    }
-
-    function setGearFilter(filter) {
-      gearFilter = filter;
-      document.querySelectorAll('.gear-filter-pill').forEach(btn => {
-        btn.className = "gear-filter-pill bg-white border border-pinkapp-200 text-pinkapp-800 px-3 py-1 rounded-xl text-[11px] font-bold transition-all";
-      });
-      const activeBtn = document.getElementById('gear-filter-' + filter);
-      if (activeBtn) {
-        activeBtn.className = "gear-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold transition-all";
-      }
-      renderGearList();
-    }
-
     function openGearModal() {
       document.getElementById('form-gear').reset();
-      const modal = document.getElementById('modal-gear');
-      const card = document.getElementById('modal-gear-card');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      card.classList.remove('translate-y-full');
+      openModal('modal-gear');
     }
 
     function saveGearForm(e) {
       e.preventDefault();
       const newGear = {
         id: 'g_' + Date.now(),
-        name: document.getElementById('input-gear-name').value,
+        name: document.getElementById('input-gear-name').value.trim(),
         type: document.getElementById('input-gear-type').value,
-        brand: document.getElementById('input-gear-brand').value,
-        settingNote: document.getElementById('input-gear-note').value
+        brand: document.getElementById('input-gear-brand').value.trim(),
+        settingNote: document.getElementById('input-gear-note').value.trim()
       };
 
       gears.unshift(newGear);
-      saveStorageData('gears', gears);
-      closeModal('modal-gear');
+      saveData();
       renderGearList();
-      updateHomeStats();
-      showToast('裝備已成功登記！✨');
+      closeModal('modal-gear');
+      showToast('新裝備已保存 🌸');
     }
 
-    function renderGearList() {
-      const container = document.getElementById('gear-list-container');
-      
-      let filtered = gears.filter(g => {
-        if (gearFilter === 'ALL') return true;
-        return g.type === gearFilter;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white/70 border border-dashed border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400 font-medium">
-            尚未登記咖啡裝備 🌸
-          </div>
-        `;
-        return;
+    function deleteGear(id) {
+      if (confirm('確定刪除呢件裝備備忘？')) {
+        gears = gears.filter(g => g.id !== id);
+        saveData();
+        renderGearList();
+        showToast('裝備已刪除');
       }
+    }
 
-      container.innerHTML = filtered.map(g => `
-        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card flex justify-between items-start gap-3">
-          <div class="space-y-1">
-            <span class="text-[9px] font-bold uppercase tracking-widest bg-pinkapp-100 text-pinkapp-800 px-2 py-0.5 rounded-full border border-pinkapp-200/60">${g.brand || '咖啡裝備'}</span>
-            <h3 class="text-sm font-bold font-title text-pinkapp-900">${g.name}</h3>
-            ${g.settingNote ? `<p class="text-xs text-pinkapp-800/90 bg-pinkapp-50/70 p-2.5 rounded-2xl border border-pinkapp-200/50 font-medium">${g.settingNote}</p>` : ''}
+    // Discovery List Handlers
+    function renderDiscoveryList() {
+      const container = document.getElementById('discovery-list-container');
+      container.innerHTML = discoveryBeans.map(d => `
+        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2.5">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[9px] font-black bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full uppercase">${d.roast}</span>
+              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${d.name}</h3>
+              <p class="text-[10px] text-pinkapp-600 font-semibold">🏠 ${d.roaster} • 📍 ${d.origin}</p>
+            </div>
+            <span class="text-sm font-black font-title text-pinkapp-600">$${d.price}</span>
           </div>
-          <button onclick="deleteGear('${g.id}')" class="text-rose-400 hover:text-rose-600 p-1 shrink-0">
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
+
+          <p class="text-[11px] text-pinkapp-800 bg-purple-50/50 p-2 rounded-xl font-medium">🌸 風味筆記：${d.notes}</p>
+
+          <button onclick="addDiscoveryBeanToStash('${d.id}')" class="w-full bg-gradient-to-r from-pinkapp-500 to-rose-500 hover:from-pinkapp-600 hover:to-rose-600 text-white font-bold py-2 rounded-2xl text-xs shadow-pink-glow transition-all active:scale-95 flex items-center justify-center gap-1">
+            <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i> 一鍵加入豆櫃 💖
           </button>
         </div>
       `).join('');
@@ -2044,82 +2053,44 @@
       lucide.createIcons();
     }
 
-    function deleteGear(id) {
-      gears = gears.filter(g => g.id !== id);
-      saveStorageData('gears', gears);
-      renderGearList();
-      updateHomeStats();
-      showToast('裝備數據已移除');
-    }
+    function addDiscoveryBeanToStash(id) {
+      const d = discoveryBeans.find(x => x.id === id);
+      if (!d) return;
 
-    function renderDiscoveriesList() {
-      const container = document.getElementById('discovery-list-container');
-      if (!container) return;
-      container.innerHTML = discoveryBeans.map(d => `
-        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-2">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[9px] font-bold uppercase tracking-widest bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">${d.roaster}</span>
-              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${d.name}</h3>
-              <p class="text-[11px] text-pinkapp-600">${d.origin} • ${d.process}</p>
-            </div>
-            <span class="text-sm font-extrabold text-purple-600 font-title">$${d.price}</span>
-          </div>
-          <p class="text-xs text-pinkapp-700 font-medium">${d.description}</p>
-          <div class="flex justify-between items-center pt-1 border-t border-pinkapp-100">
-            <span class="text-[10px] text-pinkapp-400 font-bold">${d.notes}</span>
-            <button onclick="addDiscoveryToBeans('${d.id}')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] px-3 py-1 rounded-xl shadow-sm transition-all active:scale-95">
-              + 加入豆櫃 🌸
-            </button>
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function addDiscoveryToBeans(id) {
-      const item = discoveryBeans.find(d => d.id === id);
-      if (!item) return;
       const newBean = {
+        ...d,
         id: 'b_' + Date.now(),
-        name: item.name,
-        roaster: item.roaster,
-        origin: item.origin,
-        process: item.process,
-        roast: item.roast,
-        weight: 200,
-        date: new Date().toISOString().split('T')[0],
-        price: item.price,
-        notes: item.notes,
-        flavor: { aroma: 4.8, acidity: 4.5, sweetness: 4.6, body: 3.2, finish: 4.6 }
+        date: new Date().toISOString().substring(0, 10)
       };
+
       beans.unshift(newBean);
-      saveStorageData('beans', beans);
-      populateBeanOptions();
-      updateHomeStats();
-      showToast(`已成功將 [${item.name}] 加入豆櫃！💖`);
+      saveData();
+      renderBeansList();
+      populateBeanSelects();
+      showToast(`已將 ${d.name} 加入粉紅豆櫃 💖`);
     }
 
+    // Interactive Timer State
     let timerInterval = null;
     let timerSeconds = 0;
-    let isTimerRunning = false;
+    let timerRunning = false;
 
     function openTimerModal() {
-      const modal = document.getElementById('modal-timer');
-      const card = document.getElementById('modal-timer-card');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      card.classList.remove('translate-y-full');
+      resetBrewTimer();
+      openModal('modal-timer');
     }
 
     function toggleBrewTimer() {
-      const playIcon = document.getElementById('timer-play-icon');
-      if (isTimerRunning) {
+      const toggleBtn = document.getElementById('btn-timer-toggle');
+      const icon = document.getElementById('timer-play-icon');
+
+      if (timerRunning) {
         clearInterval(timerInterval);
-        isTimerRunning = false;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        timerRunning = false;
+        icon.setAttribute('data-lucide', 'play');
       } else {
-        isTimerRunning = true;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+        timerRunning = true;
+        icon.setAttribute('data-lucide', 'pause');
         timerInterval = setInterval(() => {
           timerSeconds++;
           updateTimerDisplay();
@@ -2130,11 +2101,11 @@
 
     function resetBrewTimer() {
       clearInterval(timerInterval);
-      isTimerRunning = false;
+      timerRunning = false;
       timerSeconds = 0;
+      const icon = document.getElementById('timer-play-icon');
+      if (icon) icon.setAttribute('data-lucide', 'play');
       updateTimerDisplay();
-      const playIcon = document.getElementById('timer-play-icon');
-      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
       lucide.createIcons();
     }
 
@@ -2144,73 +2115,51 @@
       document.getElementById('timer-display').textContent = `${mins}:${secs}`;
 
       const badge = document.getElementById('timer-stage-badge');
-      const instruct = document.getElementById('timer-instruction');
+      const instruction = document.getElementById('timer-instruction');
       const bar = document.getElementById('timer-progress-bar');
-
-      let pct = Math.min(100, (timerSeconds / 150) * 100);
-      if (bar) bar.style.width = pct + '%';
 
       if (timerSeconds === 0) {
         badge.textContent = '🌸 準備 Ready';
-        instruct.textContent = '點擊下方粉紅按鈕，開啟手沖悶蒸階段 ✨';
+        instruction.textContent = '點擊下方粉紅按鈕，開啟手沖悶蒸階段 ✨';
+        bar.style.width = '0%';
       } else if (timerSeconds <= 30) {
-        badge.textContent = '🌸 階段 1：第一段注水/悶蒸 (0-30s)';
-        instruct.textContent = '注入約 30-40g 熱水，靜置悶蒸 30 秒，醒發咖啡香氣 ☕';
-      } else if (timerSeconds <= 90) {
-        badge.textContent = '🌸 階段 2：主要萃取 (30s-1m30s)';
-        instruct.textContent = '順時針繞圈注入至 150g 水量，維持穩定水流 💧';
+        badge.textContent = '💧 階段 1: 悶蒸 Bloom (0-30s)';
+        instruction.textContent = '注入 30-40g 水，溫和讓粉層排氣 🌸';
+        bar.style.width = `${(timerSeconds / 30) * 33}%`;
+      } else if (timerSeconds <= 75) {
+        badge.textContent = '🌊 階段 2: 第一段注水 (30-75s)';
+        instruction.textContent = '中心繞圈注水至總水量 60%，萃取酸香與花香 ✨';
+        bar.style.width = `${33 + ((timerSeconds - 30) / 45) * 33}%`;
       } else if (timerSeconds <= 150) {
-        badge.textContent = '🌸 階段 3：尾段萃取 (1m30s-2m30s)';
-        instruct.textContent = '中央注水至總目標水量 (240g)，靜置等候完全滴濾 🌸';
+        badge.textContent = '✨ 階段 3: 尾段注水與濾乾 (75-150s)';
+        instruction.textContent = '柔和注水至目標總克數，等待完全滴乾。';
+        bar.style.width = `${66 + ((timerSeconds - 75) / 75) * 34}%`;
       } else {
-        badge.textContent = '✨ 萃取完成 SLAY!';
-        instruct.textContent = '手沖完成！享受你嘅 Perfect Cup Coffee 💖';
+        badge.textContent = '🎉 淬鍊完成 Slay!';
+        instruction.textContent = '享受專屬你嘅完美粉紅咖啡時間 ☕💖';
+        bar.style.width = '100%';
       }
     }
 
-    function updateTopClock() {
-      const now = new Date();
-      const clockEl = document.getElementById('clock-display');
-      if (clockEl) {
-        clockEl.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      }
-    }
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      renderBeansList();
+      populateBeanSelects();
+      renderBrewsList();
+      renderGearList();
+      renderDiscoveryList();
 
-    // App Initialization
-    document.addEventListener('DOMContentLoaded', () => {
-      setInterval(updateTopClock, 1000);
-      updateTopClock();
-      navigateTo('home');
+      // Realtime Clock
+      setInterval(() => {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const clockEl = document.getElementById('clock-display');
+        if (clockEl) clockEl.textContent = `${hrs}:${mins}`;
+      }, 1000);
+
+      lucide.createIcons();
     });
   </script>
-<script>
-  const SUPABASE_URL = 'https://lozjdspcjwkozfuwcxdt.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_Eo9i0WL-Ea3LwoLghTjg8g_FCB3QgOo';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  async function saveToCloud(data) {
-    try {
-      await supabaseClient
-        .from('coffee_inventory')
-        .upsert({ id: 1, data: data });
-    } catch (err) {
-      console.error('Cloud sync error:', err);
-    }
-  }
-
-  supabaseClient
-    .channel('public:coffee_inventory')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'coffee_inventory' }, payload => {
-      if (payload.new && payload.new.data) {
-        const cloud = payload.new.data;
-        if (cloud.beans) localStorage.setItem('brewcraft_vbean_38_beans', JSON.stringify(cloud.beans));
-        if (cloud.brews) localStorage.setItem('brewcraft_vbean_38_brews', JSON.stringify(cloud.brews));
-        if (cloud.gears) localStorage.setItem('brewcraft_vbean_38_gears', JSON.stringify(cloud.gears));
-        location.reload();
-      }
-    })
-    .subscribe();
-</script>
-</body>
 </body>
 </html>
