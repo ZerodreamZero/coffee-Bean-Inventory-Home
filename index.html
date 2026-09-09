@@ -361,7 +361,14 @@
           <div class="flex justify-between items-center"><h3 class="font-title font-bold text-pinkapp-900">🧪 低庫存 Blend Lab</h3><button onclick="aiBlendAdvice()" class="text-[10px] bg-purple-100 text-purple-700 px-2.5 py-1.5 rounded-xl font-bold">AI 配方</button></div>
           <p class="text-[10px] text-pinkapp-600">少於 15g 自動列入處置名單；AI 會優先避免浪費並兼顧甜感、酸質與 body。</p><div id="ai-blend-result" class="text-xs"></div>
         </div>
-        <div class="bg-pinkapp-50 border border-pinkapp-200 rounded-2xl p-3 text-[10px] text-pinkapp-700">☁️ Supabase Cloud Sync：已內置安全連線設定，資料會同步至你的 Supabase 帳戶空間。</div>
+        <div class="bg-pinkapp-50 border border-pinkapp-200 rounded-2xl p-3 text-[10px] text-pinkapp-700 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span>☁️ Supabase Cloud Sync</span>
+            <span id="sb-status" class="font-black">⏳ 連線中…</span>
+          </div>
+          <div id="sb-detail" class="text-pinkapp-600/80">雲端資料同步已內置；API secrets 不會放入瀏覽器。</div>
+          <button onclick="testSupabaseConnection()" class="bg-white border border-pinkapp-200 text-pinkapp-700 rounded-xl px-2.5 py-1.5 font-bold">測試 Cloud / AI 連線</button>
+        </div>
       </section>
 
       <!-- SECTION 1: 豆櫃管理 (BEAN STASH & INVENTORY) -->
@@ -1662,87 +1669,227 @@
       lucide.createIcons();
     });
   
-    // ===== BrewBrewBrew Smart Butler v2 =====
+    // ===== BrewBrewBrew Smart Butler v3 — Supabase Production Fix =====
     let sbClient = null;
-    const BBB_CONFIG_KEY = 'brewbrewbrew_supabase_config_v2';
+    let sbAuthPromise = null;
+    let cloudSaveTimer = null;
     const SUPABASE_URL = 'https://lozjdspcjwkozfuwcxdt.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_Eo9i0WL-Ea3LwoLghTjg8g_FCB3QgOo';
-    const BBB_DATA_VERSION = '2026-09-10-38beans';
+    const BBB_DATA_VERSION = '2026-09-10-38beans-v3';
 
-    // Preserve original local-first behaviour while adding cloud sync.
-    const originalSaveData = saveData;
+    const originalSaveDataV3 = saveData;
     saveData = function() {
-      originalSaveData();
+      originalSaveDataV3();
       localStorage.setItem('brewbrewbrew_data_version', BBB_DATA_VERSION);
-      cloudSaveSnapshot();
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(() => cloudSaveSnapshot().catch(() => {}), 700);
     };
 
-    function getSupabaseConfig() { return {url: SUPABASE_URL, anon: SUPABASE_KEY}; }
-    async function ensureSupabaseAuth() {
-      if(!sbClient) return null;
-      try {
-        const {data:{session}} = await sbClient.auth.getSession();
-        if(session?.user) return session.user;
-        const {data,error}=await sbClient.auth.signInAnonymously();
-        if(error) throw error;
-        return data?.user || null;
-      } catch(e) { console.warn('Supabase auth skipped:', e.message); return null; }
+    function setSupabaseStatus(status, detail='') {
+      const s = document.getElementById('sb-status');
+      const d = document.getElementById('sb-detail');
+      if (s) s.textContent = status;
+      if (d && detail) d.textContent = detail;
     }
+
     function initSupabaseClient() {
-      if (!window.supabase) return null;
+      if (!window.supabase) {
+        setSupabaseStatus('❌ SDK 未載入', 'Supabase JavaScript SDK 載入失敗，請重新整理頁面。');
+        return null;
+      }
       if (sbClient) return sbClient;
-      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-      const s=document.getElementById('sb-status'); if(s) s.textContent='✓ Supabase 已連接';
-      return sbClient;
+      try {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false,
+            flowType: 'implicit'
+          },
+          global: { headers: { 'x-brewbrewbrew': 'v3' } }
+        });
+        setSupabaseStatus('⏳ 已初始化', '正在建立匿名登入及 Cloud Sync…');
+        return sbClient;
+      } catch (e) {
+        setSupabaseStatus('❌ 初始化失敗', e.message || 'Supabase client initialization failed');
+        return null;
+      }
     }
+
+    async function ensureSupabaseAuth() {
+      const client = initSupabaseClient();
+      if (!client) throw new Error('Supabase SDK/client unavailable');
+      if (sbAuthPromise) return sbAuthPromise;
+      sbAuthPromise = (async () => {
+        const { data: sessionData, error: sessionError } = await client.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (sessionData?.session?.user) return sessionData.session.user;
+
+        const { data, error } = await client.auth.signInAnonymously();
+        if (error) throw new Error(`Supabase Anonymous Auth: ${error.message}`);
+        if (!data?.user) throw new Error('Supabase Anonymous Auth succeeded but no user was returned');
+        return data.user;
+      })().catch(err => {
+        sbAuthPromise = null;
+        setSupabaseStatus('❌ Auth 失敗', err.message || 'Anonymous Sign-In failed');
+        throw err;
+      });
+      const user = await sbAuthPromise;
+      setSupabaseStatus('✓ Cloud 已連接', `Anonymous user 已連線；資料會同步到 ${SUPABASE_URL.replace('https://','').split('.')[0]}。`);
+      return user;
+    }
+
     async function cloudSaveSnapshot() {
-      if (!initSupabaseClient()) return;
+      const client = initSupabaseClient();
+      if (!client) return false;
       try {
-        const user=await ensureSupabaseAuth();
-        if(!user) return;
-        const {error}=await sbClient.from('coffee_app_state').upsert({id:user.id,user_id:user.id,beans,brews,gears,updated_at:new Date().toISOString()});
-        if(error) throw error;
-      } catch(e) { console.warn('Cloud sync skipped:',e.message); }
+        const user = await ensureSupabaseAuth();
+        const { error } = await client.from('coffee_app_state').upsert({
+          id: user.id,
+          user_id: user.id,
+          beans,
+          brews,
+          gears,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+        if (error) throw new Error(`Cloud Save: ${error.message}`);
+        return true;
+      } catch (e) {
+        console.warn('[BrewBrewBrew] cloud save failed:', e);
+        setSupabaseStatus('⚠️ Cloud Sync 失敗', e.message || 'Cloud save failed');
+        return false;
+      }
     }
+
     async function loadCloudSnapshot() {
-      if (!initSupabaseClient()) return;
+      const client = initSupabaseClient();
+      if (!client) return false;
       try {
-        const user=await ensureSupabaseAuth();
-        if(!user) return;
-        const {data,error}=await sbClient.from('coffee_app_state').select('*').eq('id',user.id).eq('user_id',user.id).maybeSingle();
-        if(error) throw error;
-        if(data){ beans=Array.isArray(data.beans)?data.beans:beans; brews=Array.isArray(data.brews)?data.brews:brews; gears=Array.isArray(data.gears)?data.gears:gears; originalSaveData(); renderBeansList(); populateBeanSelects(); renderBrewsList(); renderGearList(); }
-        else await cloudSaveSnapshot();
-      } catch(e){ console.warn('Cloud load skipped:',e.message); }
+        const user = await ensureSupabaseAuth();
+        const { data, error } = await client.from('coffee_app_state')
+          .select('id,user_id,beans,brews,gears,updated_at')
+          .eq('id', user.id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (error) throw new Error(`Cloud Load: ${error.message}`);
+        if (data) {
+          beans = Array.isArray(data.beans) ? data.beans : beans;
+          brews = Array.isArray(data.brews) ? data.brews : brews;
+          gears = Array.isArray(data.gears) ? data.gears : gears;
+          originalSaveDataV3();
+          renderBeansList();
+          populateBeanSelects();
+          renderBrewsList();
+          renderGearList();
+          setSupabaseStatus('✓ Cloud 已同步', `最後同步：${new Date(data.updated_at || Date.now()).toLocaleString('zh-HK')}`);
+        } else {
+          await cloudSaveSnapshot();
+        }
+        return true;
+      } catch (e) {
+        console.warn('[BrewBrewBrew] cloud load failed:', e);
+        setSupabaseStatus('⚠️ Cloud Load 失敗', e.message || 'Cloud load failed');
+        return false;
+      }
     }
-    function saveSecureConfig() { showToast('Supabase 已內置並已連接 💖'); }
-    async function invokeButler(action,payload={}) {
-      if(!initSupabaseClient()) throw new Error('Supabase client unavailable');
+
+    function extractFunctionError(error) {
+      if (!error) return 'Unknown Edge Function error';
+      let message = error.message || String(error);
+      try {
+        const ctx = error.context;
+        if (ctx?.status) message += ` (HTTP ${ctx.status})`;
+      } catch (_) {}
+      return message;
+    }
+
+    async function invokeButler(action, payload = {}) {
+      const client = initSupabaseClient();
+      if (!client) throw new Error('Supabase client unavailable');
       await ensureSupabaseAuth();
-      const {data,error}=await sbClient.functions.invoke('coffee-ai',{body:{action,...payload}});
-      if(error) throw error;
-      return data;
+      try {
+        const { data, error } = await client.functions.invoke('coffee-ai', {
+          body: { action, ...payload }
+        });
+        if (error) throw new Error(`Edge Function coffee-ai: ${extractFunctionError(error)}`);
+        if (data?.error) throw new Error(`coffee-ai: ${data.error}`);
+        return data;
+      } catch (e) {
+        const msg = extractFunctionError(e);
+        if (/Failed to send a request/i.test(msg)) {
+          throw new Error('無法連到 Supabase Edge Function「coffee-ai」。請先在 Supabase Deploy coffee-ai；如果已部署，再檢查 Anonymous Sign-ins 及 Edge Function Secrets。');
+        }
+        throw new Error(msg);
+      }
     }
+
+    async function testSupabaseConnection() {
+      const el = document.getElementById('sb-detail');
+      if (el) el.textContent = '⏳ 正在測試 Supabase Auth → Edge Function…';
+      try {
+        await ensureSupabaseAuth();
+        const result = await invokeButler('health');
+        const missing = Object.entries(result?.services || {}).filter(([,v]) => !v).map(([k]) => k);
+        if (missing.length) {
+          setSupabaseStatus('⚠️ Function 已通', `Edge Function 正常，但未設定：${missing.join(', ')}`);
+        } else {
+          setSupabaseStatus('✓ Supabase + AI 已通', `coffee-ai 正常；Gemini / Tavily / Places / Firecrawl secrets 均可讀取。`);
+        }
+        return result;
+      } catch (e) {
+        setSupabaseStatus('❌ AI 連線失敗', e.message || 'Connection test failed');
+        showToast(e.message || 'AI connection failed');
+        throw e;
+      }
+    }
+
     function compressImage(file,maxSide=1600,quality=.82){
-      return new Promise((resolve,reject)=>{ const img=new Image(), fr=new FileReader(); fr.onload=()=>{img.onload=()=>{let w=img.width,h=img.height,scale=Math.min(1,maxSide/Math.max(w,h));w=Math.round(w*scale);h=Math.round(h*scale);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);resolve(c.toDataURL('image/jpeg',quality).split(',')[1]);};img.onerror=reject;img.src=fr.result;};fr.onerror=reject;fr.readAsDataURL(file); });
+      return new Promise((resolve,reject)=>{
+        const img=new Image(), fr=new FileReader();
+        fr.onload=()=>{
+          img.onload=()=>{
+            let w=img.width,h=img.height,scale=Math.min(1,maxSide/Math.max(w,h));
+            w=Math.round(w*scale);h=Math.round(h*scale);
+            const c=document.createElement('canvas');c.width=w;c.height=h;
+            const ctx=c.getContext('2d');
+            ctx.drawImage(img,0,0,w,h);
+            resolve(c.toDataURL('image/jpeg',quality).split(',')[1]);
+          };
+          img.onerror=()=>reject(new Error('圖片無法讀取'));
+          img.src=fr.result;
+        };
+        fr.onerror=()=>reject(new Error('圖片檔案無法讀取'));
+        fr.readAsDataURL(file);
+      });
     }
-    function renderAIResult(el,obj){ el.innerHTML='<div class="bg-pinkapp-50 border border-pinkapp-100 rounded-2xl p-3 whitespace-pre-wrap font-medium">'+escapeHtml(typeof obj==='string'?obj:JSON.stringify(obj,null,2))+'</div>'; }
+
+    function renderAIResult(el,obj){
+      if(!el) return;
+      const text = typeof obj==='string' ? obj : JSON.stringify(obj,null,2);
+      el.innerHTML='<div class="bg-pinkapp-50 border border-pinkapp-100 rounded-2xl p-3 whitespace-pre-wrap font-medium">'+escapeHtml(text)+'</div>';
+    }
+
     async function aiAnalyzeBeanPhoto(){
       const f=document.getElementById('ai-bean-photo')?.files?.[0], el=document.getElementById('ai-vision-result');
-      if(!f) return showToast('請先上傳或拍攝咖啡豆包裝'); el.innerHTML='⏳ Gemini Vision 正在辨識，Tavily 正在交叉搜尋…';
+      if(!f) return showToast('請先上傳或拍攝咖啡豆包裝');
+      el.innerHTML='⏳ Gemini Vision 正在辨識，Tavily 正在交叉搜尋…';
       try { const image_base64=await compressImage(f); const r=await invokeButler('vision',{image_base64,mime_type:'image/jpeg'}); renderAIResult(el,r); }
       catch(e){el.textContent='❌ '+e.message;}
     }
+
     async function aiDailyRecommendation(){
-      const el=document.getElementById('ai-daily-result'); el.innerHTML='⏳ AI 正在按時間＋養豆＋殘量選豆…';
-      try { const r=await invokeButler('recommend',{now:new Date().toISOString(),beans}); renderAIResult(el,r); }
+      const el=document.getElementById('ai-daily-result'); if(!el) return;
+      el.innerHTML='⏳ AI 正在按時間＋養豆＋殘量選豆…';
+      try { const r=await invokeButler('recommend',{now:new Date().toISOString(),beans}); renderAIResult(el,r); const home=document.getElementById('recommendation-result'); if(home) renderAIResult(home,r); }
       catch(e){ el.textContent='❌ '+e.message; }
     }
+
     async function aiDialIn(){
       const el=document.getElementById('ai-dial-result'); el.innerHTML='⏳ AI Coach 分析中…';
       try { const r=await invokeButler('dialin',{taste:document.getElementById('ai-taste').value,temp:+document.getElementById('ai-temp').value,grind:document.getElementById('ai-grind').value}); renderAIResult(el,r); }
       catch(e){el.textContent='❌ '+e.message;}
     }
+
     async function aiBlendAdvice(){
       const el=document.getElementById('ai-blend-result'); el.innerHTML='⏳ AI Blend Lab 配對中…';
       const low=beans.filter(b=>(+b.weight||0)<15); if(!low.length){el.textContent='目前沒有 <15g 豆。';return;}
@@ -1750,32 +1897,46 @@
       catch(e){el.textContent='❌ '+e.message;}
     }
 
+    async function aiExplorePlaces(){
+      const el=document.getElementById('place-result');
+      const city=document.getElementById('place-city')?.value?.trim();
+      const query=document.getElementById('place-query')?.value?.trim() || 'specialty coffee';
+      if(!city){ if(el) el.textContent='請先輸入城市，例如 Hong Kong / Seoul / Amsterdam。'; return; }
+      if(el) el.innerHTML='⏳ Google Places 搜尋中，Firecrawl 正在整理公開網站資訊…';
+      try { const r=await invokeButler('places',{city,query}); renderAIResult(el,r); }
+      catch(e){ if(el) el.textContent='❌ '+e.message; }
+    }
+
     // More useful navigation without removing any existing views.
-    const originalNavigateTo = navigateTo;
+    const originalNavigateToV3 = navigateTo;
     navigateTo = function(view){
       if(view==='ai'){
         currentView='ai';
         ['home','beans','brews','gear','discover'].forEach(v=>{const el=document.getElementById(v==='home'?'view-home':`tab-${v}`); if(el)el.classList.add('hidden'); const nb=document.getElementById(`nav-btn-${v}`); if(nb){nb.classList.remove('text-pinkapp-600');nb.classList.add('text-pinkapp-300');}});
         document.getElementById('tab-ai')?.classList.remove('hidden'); document.getElementById('nav-btn-ai')?.classList.add('text-pinkapp-600');
         document.getElementById('nav-btn-ai')?.classList.remove('text-pinkapp-300'); document.getElementById('global-back-btn')?.classList.remove('hidden');
-        document.getElementById('quick-add-btn-text').textContent='AI 管家'; window.scrollTo(0,0); return;
+        const q=document.getElementById('quick-add-btn-text'); if(q) q.textContent='AI 管家'; window.scrollTo(0,0); return;
       }
-      originalNavigateTo(view);
+      originalNavigateToV3(view);
     };
 
-    // Ensure the exact 40-bean seed is used once when the new build is opened.
+    // Seed the exact 38-bean dataset once for this production build.
     if(localStorage.getItem('brewbrewbrew_data_version')!==BBB_DATA_VERSION){
       localStorage.removeItem('brewcraft_beans');
       beans=defaultBeans;
-      originalSaveData();
+      originalSaveDataV3();
       localStorage.setItem('brewbrewbrew_data_version',BBB_DATA_VERSION);
     }
-    document.addEventListener('DOMContentLoaded',()=>{
-      initSupabaseClient();
-      loadCloudSnapshot();
-      setTimeout(()=>{aiDailyRecommendation().catch(()=>{});},600);
-    });
 
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      try {
+        initSupabaseClient();
+        await loadCloudSnapshot();
+        setTimeout(()=>{aiDailyRecommendation().catch(()=>{});},800);
+      } catch(e) {
+        console.warn('[BrewBrewBrew] startup sync failed:', e);
+      }
+    });
 </script>
 </body>
 </html>
