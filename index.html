@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BrewCraft ✨ Pink Coffee Journal & Calculator</title>
+  <title>BrewBrewBrew ✨ Pink AI Coffee Journal & Manager</title>
   
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
@@ -56,6 +54,7 @@
       font-family: 'Fredoka', cursive, sans-serif;
     }
 
+    /* Modern Pink Scrollbars */
     ::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -68,13 +67,20 @@
       border-radius: 9999px;
     }
 
+    /* Soft Glow Effects */
     .shadow-pink-glow {
       box-shadow: 0 10px 28px -6px rgba(236, 72, 153, 0.35), 0 4px 12px -2px rgba(219, 39, 119, 0.15);
     }
     .shadow-soft-card {
       box-shadow: 0 8px 24px -4px rgba(236, 72, 153, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.03);
     }
+    .pink-glass {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
 
+    /* Pink range slider styling */
     input[type=range] {
       -webkit-appearance: none;
       background: transparent;
@@ -109,6 +115,14 @@
     .view-transition {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 3s infinite ease-in-out;
+    }
   </style>
 </head>
 <body class="h-full flex justify-center items-center p-0 sm:p-4 md:p-6 overflow-hidden select-none">
@@ -130,6 +144,7 @@
     <!-- Application Top Navigation Bar -->
     <header class="bg-white/90 backdrop-blur-md border-b border-pinkapp-200/60 px-4 py-3 flex items-center justify-between z-10 sticky top-0 transition-all">
       <div class="flex items-center space-x-2.5">
+        <!-- Back Button for Sub-pages -->
         <button 
           id="global-back-btn" 
           onclick="navigateTo('home')" 
@@ -144,28 +159,26 @@
         </div>
         <div>
           <h1 id="header-title" class="text-base font-extrabold font-title tracking-wide text-pinkapp-900 flex items-center gap-1.5 leading-tight">
-            BrewCraft ✨
-            <span class="text-[9px] font-sans font-black uppercase tracking-widest bg-pinkapp-500 text-white px-2 py-0.5 rounded-full shadow-sm">Gen Alpha</span>
+            BrewBrewBrew ✨
           </h1>
-          <p id="header-subtitle" class="text-[10px] text-pinkapp-600 font-semibold leading-none mt-0.5">🌸 Pink Aesthetic Coffee Stash</p>
+          <p id="header-subtitle" class="text-[10px] text-pinkapp-600 font-semibold leading-none mt-0.5">🌸 Pink AI Coffee Stash & Coach</p>
         </div>
       </div>
 
       <div class="flex items-center gap-1.5">
-        <!-- Key / Supabase Config Button -->
         <button 
-          onclick="openKeyModal()" 
-          class="p-2 rounded-2xl bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 transition-all active:scale-95 border border-pinkapp-200/80"
-          title="設定 Supabase Key 與即時同步"
+          onclick="openSettingsModal()" 
+          class="p-2 rounded-2xl bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 transition-all active:scale-95"
+          title="API Keys & Settings"
         >
-          <i data-lucide="key-round" class="w-4 h-4"></i>
+          <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
         <button 
           onclick="handleHeaderQuickAdd()" 
           class="flex items-center gap-1 bg-gradient-to-r from-pinkapp-500 via-rose-500 to-pinkapp-600 hover:from-pinkapp-600 hover:to-rose-600 text-white font-bold px-3 py-1.5 rounded-2xl text-xs transition-all shadow-pink-glow active:scale-95"
         >
           <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
-          <span id="quick-add-btn-text">新增紀錄</span>
+          <span id="quick-add-btn-text">新增</span>
         </button>
       </div>
     </header>
@@ -176,18 +189,20 @@
       <span id="toast-msg">Slay! 操作成功 💖</span>
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Scrollable Main Content Area -->
     <main id="main-content" class="flex-1 overflow-y-auto pb-24 px-4 py-4 relative space-y-4">
 
       <!-- VIEW 0: HOME PORTAL -->
       <section id="view-home" class="space-y-4 view-transition">
+        
+        <!-- Welcome Hero Banner Card -->
         <div class="bg-gradient-to-br from-pinkapp-500 via-rose-500 to-pinkapp-600 text-white rounded-3xl p-5 shadow-pink-glow relative overflow-hidden">
           <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
           <div class="flex justify-between items-start relative z-10">
             <div>
-              <span class="text-[10px] font-black text-pinkapp-100 uppercase tracking-widest block mb-1">💖 Main Character Energy</span>
-              <h2 class="text-xl font-black font-title tracking-wide text-white">Hey Bestie! ☕✨</h2>
-              <p class="text-xs text-pink-100 font-medium mt-1 max-w-[240px]">歡迎來到專屬你嘅粉紅咖啡靈感空間。</p>
+              <span class="text-[10px] font-black text-pinkapp-100 uppercase tracking-widest block mb-1">💖 老婆 BB CHU CHU TIFF TIFF</span>
+              <h2 class="text-xl font-black font-title tracking-wide text-white">Hey Tiffany! ☕✨</h2>
+              <p class="text-xs text-pink-100 font-medium mt-1 max-w-[240px]">歡迎來到專屬你嘅粉紅 AI 咖啡靈感空間。</p>
             </div>
             <div class="p-2.5 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 text-center shadow-sm">
               <i data-lucide="sparkles" class="w-6 h-6 text-pink-100 mx-auto mb-0.5"></i>
@@ -195,22 +210,53 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/20 relative z-10">
-            <div class="bg-white/15 backdrop-blur-sm p-2 rounded-2xl text-center border border-white/20">
-              <span class="text-[9px] text-pink-100 font-bold block">💖 豆櫃存量</span>
-              <span id="home-stat-beans" class="text-sm font-extrabold font-title text-white">0 款</span>
+          <!-- Quick Stats Bar -->
+          <div class="grid grid-cols-4 gap-1.5 mt-4 pt-3 border-t border-white/20 relative z-10">
+            <div class="bg-white/15 backdrop-blur-sm p-1.5 rounded-2xl text-center border border-white/20">
+              <span class="text-[8px] text-pink-100 font-bold block">💖 豆櫃存量</span>
+              <span id="home-stat-beans" class="text-xs font-extrabold font-title text-white">0 款</span>
             </div>
-            <div class="bg-white/15 backdrop-blur-sm p-2 rounded-2xl text-center border border-white/20">
-              <span class="text-[9px] text-pink-100 font-bold block">✨ 沖煮次數</span>
-              <span id="home-stat-brews" class="text-sm font-extrabold font-title text-white">0 次</span>
+            <div class="bg-white/15 backdrop-blur-sm p-1.5 rounded-2xl text-center border border-white/20">
+              <span class="text-[8px] text-pink-100 font-bold block">✨ Peak 黃金期</span>
+              <span id="home-stat-peak" class="text-xs font-extrabold font-title text-white">0 款</span>
             </div>
-            <div class="bg-white/15 backdrop-blur-sm p-2 rounded-2xl text-center border border-white/20">
-              <span class="text-[9px] text-pink-100 font-bold block">🌸 器材數量</span>
-              <span id="home-stat-gears" class="text-sm font-extrabold font-title text-white">0 件</span>
+            <div class="bg-white/15 backdrop-blur-sm p-1.5 rounded-2xl text-center border border-white/20">
+              <span class="text-[8px] text-pink-100 font-bold block">☕ 沖煮紀錄</span>
+              <span id="home-stat-brews" class="text-xs font-extrabold font-title text-white">0 次</span>
+            </div>
+            <div class="bg-white/15 backdrop-blur-sm p-1.5 rounded-2xl text-center border border-white/20">
+              <span class="text-[8px] text-pink-100 font-bold block">🌸 裝備數量</span>
+              <span id="home-stat-gears" class="text-xs font-extrabold font-title text-white">0 件</span>
             </div>
           </div>
         </div>
 
+        <!-- AI Daily Recommendation Section -->
+        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-3 relative overflow-hidden">
+          <div class="flex items-center justify-between border-b border-pinkapp-100 pb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-xl bg-pinkapp-100 text-pinkapp-600 flex items-center justify-center">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold font-title text-pinkapp-900" id="dashTimeContextTitle">AI 今日當適飲推介</h3>
+                <p class="text-[9px] text-pinkapp-600 font-semibold" id="dashTimeContextSubtitle">結合當前時段與養豆黃金期計算...</p>
+              </div>
+            </div>
+            <button onclick="generateDailyRecommendation()" class="bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all flex items-center gap-1">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i> 重新計算
+            </button>
+          </div>
+
+          <div id="dailyRecCard" class="text-xs text-pinkapp-800 leading-relaxed bg-pinkapp-50/70 p-3 rounded-2xl border border-pinkapp-200/50 space-y-1">
+            <div class="flex items-center gap-2 text-pinkapp-600 font-medium">
+              <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
+              <span>AI 咖啡管家正在為你調配今日首選...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Functional Navigation Grid -->
         <div class="space-y-2">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-xs font-black text-pinkapp-900 uppercase tracking-widest flex items-center gap-1.5">
@@ -220,7 +266,11 @@
           </div>
 
           <div class="grid grid-cols-2 gap-3">
-            <button onclick="navigateTo('beans')" class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]">
+            <!-- Portal Card 1: Bean Stash -->
+            <button 
+              onclick="navigateTo('beans')" 
+              class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]"
+            >
               <div class="flex justify-between items-start">
                 <div class="w-9 h-9 rounded-2xl bg-pinkapp-100 text-pinkapp-600 flex items-center justify-center group-hover:bg-pinkapp-500 group-hover:text-white transition-colors">
                   <i data-lucide="archive" class="w-5 h-5"></i>
@@ -229,12 +279,16 @@
               </div>
               <div>
                 <span class="text-[10px] font-black text-pinkapp-500 uppercase tracking-wider block">1. 粉紅豆櫃</span>
-                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-pinkapp-600 transition-colors">咖啡豆庫存與風味</h4>
-                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">克數追蹤、5維風味評分</p>
+                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-pinkapp-600 transition-colors">豆櫃 & 相機識豆</h4>
+                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">AI 識豆包裝、養豆追蹤</p>
               </div>
             </button>
 
-            <button onclick="navigateTo('brews')" class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]">
+            <!-- Portal Card 2: Brew Calculator & Logs -->
+            <button 
+              onclick="navigateTo('brews')" 
+              class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]"
+            >
               <div class="flex justify-between items-start">
                 <div class="w-9 h-9 rounded-2xl bg-rose-100 text-rose-500 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
                   <i data-lucide="coffee" class="w-5 h-5"></i>
@@ -243,12 +297,16 @@
               </div>
               <div>
                 <span class="text-[10px] font-black text-rose-500 uppercase tracking-wider block">2. 沖泡日誌</span>
-                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-rose-600 transition-colors">黃金比例與手沖日誌</h4>
-                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">粉水比演算與星級評價</p>
+                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-rose-600 transition-colors">金杯演算 & AI 教練</h4>
+                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">風味修正、3段手沖計時</p>
               </div>
             </button>
 
-            <button onclick="navigateTo('gear')" class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]">
+            <!-- Portal Card 3: Equipment Stash -->
+            <button 
+              onclick="navigateTo('gear')" 
+              class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]"
+            >
               <div class="flex justify-between items-start">
                 <div class="w-9 h-9 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center group-hover:bg-fuchsia-500 group-hover:text-white transition-colors">
                   <i data-lucide="wrench" class="w-5 h-5"></i>
@@ -257,27 +315,32 @@
               </div>
               <div>
                 <span class="text-[10px] font-black text-fuchsia-600 uppercase tracking-wider block">3. 裝備清單</span>
-                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-fuchsia-600 transition-colors">磨豆機與器具備忘</h4>
-                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">刻度記錄與保養卡</p>
+                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-fuchsia-600 transition-colors">磨豆機與器材備忘</h4>
+                <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">研磨刻度卡與保養日誌</p>
               </div>
             </button>
 
-            <button onclick="navigateTo('discover')" class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]">
+            <!-- Portal Card 4: Bean Recommendations & Shop Search -->
+            <button 
+              onclick="navigateTo('discover')" 
+              class="group bg-white hover:bg-pinkapp-50 border border-pinkapp-200/80 rounded-3xl p-4 text-left transition-all shadow-soft-card hover:shadow-pink-glow flex flex-col justify-between h-32 relative overflow-hidden active:scale-[0.98]"
+            >
               <div class="flex justify-between items-start">
                 <div class="w-9 h-9 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                  <i data-lucide="compass" class="w-5 h-5"></i>
                 </div>
                 <i data-lucide="chevron-right" class="w-4 h-4 text-pinkapp-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all"></i>
               </div>
               <div>
-                <span class="text-[10px] font-black text-purple-600 uppercase tracking-wider block">4. 靈感新豆</span>
-                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-purple-600 transition-colors">名店嚴選熱門豆單</h4>
+                <span class="text-[10px] font-black text-purple-600 uppercase tracking-wider block">4. 靈感店 & 豆</span>
+                <h4 class="text-sm font-bold font-title text-pinkapp-900 group-hover:text-purple-600 transition-colors">熱門咖啡店與豆單</h4>
                 <p class="text-[10px] text-pinkapp-600/70 line-clamp-1 font-medium">一鍵直接收藏入櫃</p>
               </div>
             </button>
           </div>
         </div>
 
+        <!-- Quick Timer Bar -->
         <div class="bg-gradient-to-br from-pinkapp-100 via-pink-50 to-white border border-pinkapp-200 rounded-3xl p-4 shadow-soft-card flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pinkapp-500 to-rose-500 text-white flex items-center justify-center shadow-pink-glow shrink-0">
@@ -288,11 +351,15 @@
               <p class="text-[10px] text-pinkapp-600 font-medium">悶蒸 30s ➔ 第一段 ➔ 尾段萃取</p>
             </div>
           </div>
-          <button onclick="openTimerModal()" class="bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold px-3.5 py-2 rounded-2xl text-xs transition-all shadow-pink-glow flex items-center gap-1 active:scale-95 shrink-0">
+          <button 
+            onclick="openTimerModal()" 
+            class="bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold px-3.5 py-2 rounded-2xl text-xs transition-all shadow-pink-glow flex items-center gap-1 active:scale-95 shrink-0"
+          >
             啟動計時
           </button>
         </div>
 
+        <!-- Recent Brew Activity -->
         <div class="space-y-2">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-xs font-black text-pinkapp-900 uppercase tracking-widest flex items-center gap-1.5">
@@ -305,19 +372,27 @@
             <!-- Dynamically populated -->
           </div>
         </div>
+
       </section>
 
-      <!-- SECTION 1: 豆櫃管理 -->
+      <!-- SECTION 1: 豆櫃管理 (BEAN STASH & INVENTORY) -->
       <section id="tab-beans" class="space-y-4 hidden view-transition">
+        
+        <!-- Inventory Summary Card -->
         <div class="bg-gradient-to-br from-white via-pinkapp-50 to-pinkapp-100/60 border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-3 relative overflow-hidden">
           <div class="flex justify-between items-center relative z-10">
             <div>
               <span class="text-[10px] font-black text-pinkapp-500 uppercase tracking-widest">💖 Pink Bean Stash</span>
               <h2 class="text-base font-bold font-title text-pinkapp-900">現存特選咖啡豆單</h2>
             </div>
-            <button onclick="openBeanModal()" class="text-xs bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold px-3 py-1.5 rounded-2xl transition-all shadow-pink-glow flex items-center gap-1 active:scale-95">
-              <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i> 新增咖啡豆
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openAiScannerModal()" class="text-xs bg-rose-500 hover:bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-2xl transition-all shadow-pink-glow flex items-center gap-1 active:scale-95">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i> 相機識豆
+              </button>
+              <button onclick="openBeanModal()" class="text-xs bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold px-2.5 py-1.5 rounded-2xl transition-all shadow-pink-glow flex items-center gap-1 active:scale-95">
+                <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[3]"></i> 手動新增
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-3 gap-2 pt-2 border-t border-pinkapp-200/60 relative z-10">
@@ -330,12 +405,28 @@
               <span id="stat-bean-weight" class="text-sm font-extrabold font-title text-pinkapp-600">0 g</span>
             </div>
             <div class="bg-white/80 backdrop-blur-sm p-2 rounded-2xl border border-pinkapp-200/50 text-center">
-              <span class="text-[9px] text-pinkapp-600 block font-bold">烘焙商</span>
-              <span id="stat-bean-roasters" class="text-sm font-extrabold font-title text-pinkapp-900">0 家</span>
+              <span class="text-[9px] text-pinkapp-600 block font-bold">賞味期 Peak</span>
+              <span id="stat-bean-peak" class="text-sm font-extrabold font-title text-emerald-600">0 款</span>
             </div>
           </div>
         </div>
 
+        <!-- AI Low Stock Blend Advisor Banner -->
+        <div id="blendAdvisorBanner" class="hidden bg-gradient-to-r from-pinkapp-500 via-rose-500 to-pinkapp-600 text-white rounded-3xl p-4 shadow-pink-glow space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-pink-100 font-bold text-xs">
+              <i data-lucide="flask-conical" class="w-4 h-4"></i>
+              <span>AI 低庫存特調拼豆 (Blend Advisor)</span>
+            </div>
+            <button onclick="generateBlendSuggestion()" class="bg-white text-pinkapp-700 hover:bg-pink-50 font-bold px-3 py-1 rounded-xl text-xs transition-all shadow-sm">
+              生成拼豆配方
+            </button>
+          </div>
+          <p class="text-[11px] text-pink-100 leading-tight">檢測到有咖啡豆殘量少於 15g！讓 Gemini AI 為你計算相性並與其他豆款特調手沖。</p>
+          <div id="blendOutputCard" class="hidden bg-white/20 backdrop-blur-md rounded-2xl p-3 text-xs leading-relaxed space-y-1 border border-white/30 text-white"></div>
+        </div>
+
+        <!-- Beans Filter & Search -->
         <div class="space-y-2.5">
           <div class="relative">
             <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-pinkapp-400"></i>
@@ -343,7 +434,7 @@
               type="text" 
               id="bean-search-input"
               oninput="renderBeansList()"
-              placeholder="搜尋豆名、產地或烘焙商..."
+              placeholder="搜尋豆名、產地或處理法..."
               class="w-full bg-white border border-pinkapp-200 rounded-2xl pl-10 pr-4 py-2 text-xs text-pinkapp-900 placeholder-pinkapp-300 focus:outline-none focus:border-pinkapp-500 shadow-sm transition-all"
             >
           </div>
@@ -364,13 +455,17 @@
           </div>
         </div>
 
+        <!-- Bean Inventory List Container -->
         <div id="beans-list-container" class="space-y-3">
           <!-- Dynamically populated -->
         </div>
+
       </section>
 
-      <!-- SECTION 2: 沖泡推介與日誌 -->
+      <!-- SECTION 2: 沖泡推介與日誌 (BREW RECIPES, CALCULATOR & AI COACH) -->
       <section id="tab-brews" class="space-y-4 hidden view-transition">
+
+        <!-- Smart Brew Recommendation Banner -->
         <div class="bg-gradient-to-br from-pinkapp-600 via-rose-500 to-pinkapp-700 text-white rounded-3xl p-4 shadow-pink-glow space-y-3 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
@@ -397,6 +492,69 @@
           </div>
         </div>
 
+        <!-- AI Brew Coach (Dial-In Assistant) Accordion -->
+        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-3">
+          <div class="flex items-center justify-between border-b border-pinkapp-100 pb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-xl bg-pinkapp-100 text-pinkapp-600 flex items-center justify-center">
+                <i data-lucide="sliders" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold font-title text-pinkapp-900">AI 沖煮風味修正教練 (Dial-In)</h3>
+                <p class="text-[9px] text-pinkapp-600 font-semibold">過酸或過苦？讓 AI 指引研磨度與水溫調整</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-pinkapp-700 mb-1">使用咖啡豆</label>
+                <select id="coachBeanSelect" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2.5 py-1.5 text-xs text-pinkapp-900 focus:outline-none font-medium">
+                  <!-- Options populated -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-pinkapp-700 mb-1">沖煮器具</label>
+                <select id="coachMethod" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2.5 py-1.5 text-xs text-pinkapp-900 focus:outline-none font-medium">
+                  <option value="V60 手沖">V60 手沖</option>
+                  <option value="Espresso 意式濃縮">Espresso 意式濃縮</option>
+                  <option value="AeroPress 愛樂壓">AeroPress 愛樂壓</option>
+                  <option value="French Press 壓濾壺">French Press 壓濾壺</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-pinkapp-700 mb-1">口感問題反饋</label>
+              <select id="coachTasteIssue" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2.5 py-1.5 text-xs text-pinkapp-900 focus:outline-none font-medium">
+                <option value="過酸、尖銳缺乏甜感 (萃取不足)">過酸、尖銳缺乏甜感 (萃取不足)</option>
+                <option value="苦澀、乾澀、尾韻雜味 (萃取過度)">苦澀、乾澀、尾韻雜味 (萃取過度)</option>
+                <option value="水感太重、風味平淡 (通道效應)">水感太重、風味平淡 (通道效應)</option>
+                <option value="醇厚度太重、缺乏花果香">醇厚度太重、缺乏花果香</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-pinkapp-700 mb-1">當前參數 (水溫 / 粉重 / 流速)</label>
+              <input type="text" id="coachNotes" placeholder="例如: 15g粉, 92度, 2分15秒" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-xs text-pinkapp-900 focus:outline-none placeholder-pinkapp-300">
+            </div>
+
+            <button onclick="askBrewCoach()" class="w-full bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-2 rounded-xl text-xs transition-all shadow-pink-glow flex items-center justify-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> 請教 AI 沖煮教練
+            </button>
+
+            <div id="coachAdviceOutput" class="hidden p-3 rounded-2xl bg-pinkapp-50 border border-pinkapp-200 text-xs leading-relaxed space-y-1 text-pinkapp-900">
+              <div class="flex items-center gap-1.5 font-bold text-pinkapp-700">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500"></i>
+                <span>AI 教練診斷與修正建議</span>
+              </div>
+              <div id="coachAdviceBody" class="whitespace-pre-line text-[11px] text-pinkapp-800"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Brew History Filter & Search -->
         <div class="space-y-2">
           <div class="flex items-center justify-between gap-2">
             <div class="relative flex-1">
@@ -424,13 +582,16 @@
           </div>
         </div>
 
+        <!-- Brew Logs Container -->
         <div id="brews-list-container" class="space-y-3">
           <!-- Dynamically populated -->
         </div>
+
       </section>
 
-      <!-- SECTION 3: 器材管理 -->
+      <!-- SECTION 3: 器材管理 (EQUIPMENT MANAGEMENT) -->
       <section id="tab-gear" class="space-y-4 hidden view-transition">
+        
         <div class="flex justify-between items-center">
           <div>
             <span class="text-[10px] font-black text-fuchsia-600 uppercase tracking-widest">🌸 Gear Collection</span>
@@ -441,6 +602,7 @@
           </button>
         </div>
 
+        <!-- Gear Filter Tabs -->
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar text-xs">
           <button onclick="setGearFilter('ALL')" id="gear-filter-ALL" class="gear-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold transition-all">全部裝備</button>
           <button onclick="setGearFilter('GRINDER')" id="gear-filter-GRINDER" class="gear-filter-pill bg-white border border-pinkapp-200 text-pinkapp-800 px-3 py-1 rounded-xl text-[11px] font-bold transition-all">磨豆機</button>
@@ -448,13 +610,16 @@
           <button onclick="setGearFilter('ESPRESSO')" id="gear-filter-ESPRESSO" class="gear-filter-pill bg-white border border-pinkapp-200 text-pinkapp-800 px-3 py-1 rounded-xl text-[11px] font-bold transition-all">意式咖啡機</button>
         </div>
 
+        <!-- Gear List Container -->
         <div id="gear-list-container" class="space-y-3">
           <!-- Dynamically populated -->
         </div>
+
       </section>
 
-      <!-- SECTION 4: 新豆推薦 -->
+      <!-- SECTION 4: 新豆推薦與熱門店 (BOUTIQUE RECOMMENDATIONS & SEARCH) -->
       <section id="tab-discover" class="space-y-4 hidden view-transition">
+        
         <div class="bg-gradient-to-br from-purple-600 via-pinkapp-600 to-rose-500 text-white rounded-3xl p-4 shadow-pink-glow space-y-2 relative overflow-hidden">
           <div class="flex items-center gap-1.5 text-pink-200">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -466,9 +631,27 @@
           </p>
         </div>
 
+        <!-- Coffee Shop Search Group -->
+        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-3">
+          <h3 class="text-xs font-bold font-title text-pinkapp-900 flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="w-4 h-4 text-pinkapp-500"></i> 熱門地區咖啡店與豆單搜尋
+          </h3>
+          <div class="flex gap-2">
+            <input type="text" id="shopSearchQuery" value="Central Hong Kong Specialty Coffee" placeholder="輸入地區..." class="flex-1 bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-xs text-pinkapp-900 focus:outline-none">
+            <button onclick="exploreCoffeeShops()" class="bg-pinkapp-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm shrink-0">
+              搜尋
+            </button>
+          </div>
+          <div id="exploreResults" class="space-y-2 pt-1">
+            <!-- Search Results Populated Here -->
+          </div>
+        </div>
+
+        <!-- Discovery Menu Cards -->
         <div id="discovery-list-container" class="space-y-3">
           <!-- Dynamically populated -->
         </div>
+
       </section>
 
     </main>
@@ -496,1112 +679,1252 @@
       </button>
 
       <button onclick="navigateTo('discover')" id="nav-btn-discover" class="nav-item flex flex-col items-center gap-0.5 text-pinkapp-300 hover:text-pinkapp-600 transition-colors py-1 px-2 font-bold">
-        <i data-lucide="sparkles" class="w-5 h-5"></i>
-        <span class="text-[9px] font-bold tracking-tight">新豆</span>
+        <i data-lucide="compass" class="w-5 h-5"></i>
+        <span class="text-[9px] font-bold tracking-tight">靈感</span>
       </button>
     </nav>
 
-    <!-- MODAL: SUPABASE & KEY CONFIG -->
-    <div id="modal-key" class="fixed inset-0 z-50 flex items-center justify-center bg-pinkapp-900/50 backdrop-blur-sm p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-      <div class="w-full max-w-sm bg-white text-pinkapp-900 rounded-3xl border border-pinkapp-200 p-5 shadow-2xl space-y-4">
-        <div class="flex justify-between items-center border-b border-pinkapp-100 pb-3">
-          <h3 class="text-sm font-bold font-title text-pinkapp-900 flex items-center gap-1.5">
-            <i data-lucide="key-round" class="w-4 h-4 text-pinkapp-600"></i> Supabase 即時同步金鑰
-          </h3>
-          <button onclick="closeModal('modal-key')" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+  </div>
+
+  <!-- MODALS CONTAINER -->
+
+  <!-- Modal 1: AI Bean Photo Scanner Modal -->
+  <div id="aiScannerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-5 shadow-2xl border border-pinkapp-200 space-y-4">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 class="font-bold text-sm font-title text-pinkapp-900 flex items-center gap-1.5">
+          <i data-lucide="camera" class="w-4 h-4 text-pinkapp-500"></i> AI 咖啡包裝影相辨識
+        </h3>
+        <button onclick="closeAiScannerModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div id="dropZone" class="border-2 border-dashed border-pinkapp-300 hover:border-pinkapp-500 rounded-2xl p-6 text-center bg-pinkapp-50/50 cursor-pointer transition flex flex-col items-center justify-center min-h-[160px]">
+          <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+          <div id="uploadPlaceholder" class="space-y-2">
+            <div class="w-12 h-12 rounded-full bg-pinkapp-100 flex items-center justify-center mx-auto text-pinkapp-500">
+              <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+            </div>
+            <p class="text-xs font-semibold text-pinkapp-800">點擊上傳或拖放包裝照片</p>
+            <p class="text-[10px] text-pinkapp-400">Gemini Vision AI 將自動辨識風味與產區</p>
+          </div>
+          <img id="imagePreview" class="hidden max-h-40 rounded-xl object-contain shadow-md border border-pinkapp-200">
         </div>
-        
-        <form onsubmit="saveKeysForm(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">Supabase URL</label>
-            <input type="text" id="input-sb-url" placeholder="https://xyz.supabase.co" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-mono">
-          </div>
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">Supabase Anon Key</label>
-            <input type="password" id="input-sb-key" placeholder="eyJhbGciOi..." class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-mono">
-          </div>
-          <div class="pt-2 flex gap-2">
-            <button type="button" onclick="closeModal('modal-key')" class="w-1/2 bg-pinkapp-100 text-pinkapp-800 font-bold py-2 rounded-2xl hover:bg-pinkapp-200">取消</button>
-            <button type="submit" class="w-1/2 bg-pinkapp-600 text-white font-extrabold py-2 rounded-2xl hover:bg-pinkapp-700 shadow-pink-glow">儲存並連接 ✨</button>
-          </div>
-        </form>
+
+        <button onclick="processImageAnalysis()" id="btnStartScan" disabled class="w-full bg-gradient-to-r from-pinkapp-500 to-rose-500 hover:from-pinkapp-600 hover:to-rose-600 text-white font-bold py-2.5 rounded-2xl text-xs shadow-pink-glow disabled:opacity-50 flex items-center justify-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> 開始 AI 分析辨識
+        </button>
+
+        <div id="scanResultContainer" class="hidden p-3 rounded-2xl bg-pinkapp-50 border border-pinkapp-200 text-xs space-y-2">
+          <div id="scanStatusBadge" class="text-[10px] font-bold text-pinkapp-600"></div>
+          <div id="scanOutputBody" class="space-y-1 text-pinkapp-900"></div>
+          <button onclick="saveScannedBeanToInventory()" id="btnSaveScanned" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-1">
+            <i data-lucide="check" class="w-4 h-4"></i> 存入粉紅豆櫃
+          </button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- MODAL 1: ADD/EDIT COFFEE BEAN -->
-    <div id="modal-bean" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-pinkapp-900/50 backdrop-blur-sm p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-      <div id="modal-bean-card" class="w-full max-w-lg bg-white text-pinkapp-900 rounded-t-[32px] sm:rounded-[32px] border border-pinkapp-200 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform translate-y-full transition-transform duration-300">
-        
-        <div class="flex items-center justify-between border-b border-pinkapp-100 px-5 py-4 bg-pinkapp-50/50 shrink-0">
-          <div>
-            <h3 id="modal-bean-title" class="text-sm font-bold font-title text-pinkapp-900">🌸 新增咖啡豆至粉紅豆櫃</h3>
-            <p class="text-[11px] text-pinkapp-600 font-medium">記錄莊園產地與克數存量</p>
-          </div>
-          <button onclick="closeModal('modal-bean')" class="p-1 text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-
-        <form id="form-bean" onsubmit="saveBeanForm(event)" class="p-5 overflow-y-auto space-y-4 flex-1 text-xs">
-          <input type="hidden" id="bean-id">
-
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">咖啡豆名稱 / 莊園 *</label>
-            <input type="text" id="input-bean-name" required placeholder="例如：埃塞俄比亞 耶加雪菲 窩卡薩卡羅" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">烘焙商 (Roaster)</label>
-              <input type="text" id="input-bean-roaster" placeholder="如 Kurasu Kyoto" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">產地 / 國家</label>
-              <input type="text" id="input-bean-origin" placeholder="如 埃塞俄比亞" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">處理法</label>
-              <select id="input-bean-process" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-2.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
-                <option value="水洗 Washed">水洗 Washed</option>
-                <option value="日曬 Natural">日曬 Natural</option>
-                <option value="蜜處理 Honey">蜜處理 Honey</option>
-                <option value="厭氧/特殊處理 Anaerobic">厭氧 Anaerobic</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">烘焙程度</label>
-              <select id="input-bean-roast" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-2.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
-                <option value="極淺烘焙 Very Light">極淺烘焙 Very Light</option>
-                <option value="淺度烘焙 Light" selected>淺度烘焙 Light</option>
-                <option value="中淺烘焙 Medium-Light">中淺烘焙 Medium-Light</option>
-                <option value="中度烘焙 Medium">中度烘焙 Medium</option>
-                <option value="深度烘焙 Dark">深度烘焙 Dark</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2.5">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">剩餘克數 (g)</label>
-              <input type="number" id="input-bean-weight" required placeholder="200" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-bold">
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">烘焙日期</label>
-              <input type="date" id="input-bean-date" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-2 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">購入價格 ($)</label>
-              <input type="number" id="input-bean-price" placeholder="180" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-          </div>
-
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">風味標籤 (用逗號分隔)</label>
-            <input type="text" id="input-bean-notes" placeholder="例如：茉莉花, 白桃, 佛手柑, 玫瑰" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-          </div>
-
-          <div class="bg-pinkapp-50/70 border border-pinkapp-200/80 rounded-2xl p-3.5 space-y-2">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-bold text-pinkapp-900 text-xs">💖 風味5維評分 (1.0 - 5.0分)</span>
-              <span class="text-[10px] text-pinkapp-600 font-bold">香氣 / 酸度 / 甜度 / 醇厚 / 餘韻</span>
-            </div>
-            <div class="grid grid-cols-5 gap-2 text-center text-[10px] font-bold text-pinkapp-800">
-              <div>
-                <label class="block mb-1">香氣</label>
-                <input type="range" id="flavor-aroma" min="1" max="5" step="0.1" value="4.8" oninput="document.getElementById('val-aroma').textContent=this.value" class="w-full">
-                <span id="val-aroma" class="text-pinkapp-600 font-extrabold">4.8</span>
-              </div>
-              <div>
-                <label class="block mb-1">酸度</label>
-                <input type="range" id="flavor-acidity" min="1" max="5" step="0.1" value="4.5" oninput="document.getElementById('val-acidity').textContent=this.value" class="w-full">
-                <span id="val-acidity" class="text-pinkapp-600 font-extrabold">4.5</span>
-              </div>
-              <div>
-                <label class="block mb-1">甜度</label>
-                <input type="range" id="flavor-sweetness" min="1" max="5" step="0.1" value="4.2" oninput="document.getElementById('val-sweetness').textContent=this.value" class="w-full">
-                <span id="val-sweetness" class="text-pinkapp-600 font-extrabold">4.2</span>
-              </div>
-              <div>
-                <label class="block mb-1">醇厚</label>
-                <input type="range" id="flavor-body" min="1" max="5" step="0.1" value="3.0" oninput="document.getElementById('val-body').textContent=this.value" class="w-full">
-                <span id="val-body" class="text-pinkapp-600 font-extrabold">3.0</span>
-              </div>
-              <div>
-                <label class="block mb-1">餘韻</label>
-                <input type="range" id="flavor-finish" min="1" max="5" step="0.1" value="4.2" oninput="document.getElementById('val-finish').textContent=this.value" class="w-full">
-                <span id="val-finish" class="text-pinkapp-600 font-extrabold">4.2</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex gap-2 pt-2">
-            <button type="button" onclick="closeModal('modal-bean')" class="w-1/2 bg-pinkapp-100 text-pinkapp-800 font-bold py-2.5 rounded-2xl hover:bg-pinkapp-200">取消</button>
-            <button type="submit" id="btn-confirm-bean" class="w-1/2 bg-pinkapp-600 text-white font-extrabold py-2.5 rounded-2xl hover:bg-pinkapp-700 shadow-pink-glow">保存咖啡豆 💖</button>
-          </div>
-        </form>
+  <!-- Modal 2: 3-Stage Golden Ratio Timer Modal -->
+  <div id="timerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-pinkapp-200 text-center space-y-4">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 class="font-bold text-sm font-title text-pinkapp-900 flex items-center gap-1.5">
+          <i data-lucide="timer" class="w-4 h-4 text-pinkapp-500"></i> 🌸 3段金杯手沖計時器
+        </h3>
+        <button onclick="closeTimerModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-    </div>
 
-    <!-- MODAL 2: ADD BREW LOG -->
-    <div id="modal-brew" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-pinkapp-900/50 backdrop-blur-sm p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-      <div id="modal-brew-card" class="w-full max-w-lg bg-white text-pinkapp-900 rounded-t-[32px] sm:rounded-[32px] border border-pinkapp-200 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform translate-y-full transition-transform duration-300">
-        <div class="flex items-center justify-between border-b border-pinkapp-100 px-5 py-4 bg-pinkapp-50/50 shrink-0">
-          <div>
-            <h3 class="text-sm font-bold font-title text-pinkapp-900">✨ 記錄沖煮淬鍊日誌</h3>
-            <p class="text-[11px] text-pinkapp-600 font-medium">記錄水溫、粉水比與風味評分</p>
-          </div>
-          <button onclick="closeModal('modal-brew')" class="p-1 text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <div class="bg-gradient-to-br from-pinkapp-50 to-pinkapp-100 p-6 rounded-3xl border border-pinkapp-200 space-y-2">
+        <span id="timerStageLabel" class="text-xs font-extrabold text-pinkapp-600 uppercase tracking-wider block">Stage 1: 悶蒸 Bloom (30s)</span>
+        <div id="timerDisplay" class="text-5xl font-black font-title text-pinkapp-900 tracking-tight">00:00</div>
+        <p id="timerTargetWater" class="text-xs font-bold text-pinkapp-700">目標水重：40g 水</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="toggleTimer()" id="timerToggleBtn" class="bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-3 rounded-2xl text-xs shadow-pink-glow flex items-center justify-center gap-1 col-span-2">
+          <i data-lucide="play" class="w-4 h-4"></i> 開始計時
+        </button>
+        <button onclick="resetTimer()" class="bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold py-3 rounded-2xl text-xs">
+          重置
+        </button>
+      </div>
+
+      <button onclick="saveTimerToBrewLog()" id="btnSaveTimerLog" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-sm hidden">
+        ✨ 將此手沖紀錄存入沖泡日誌
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add / Edit Bean Modal -->
+  <div id="beanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-5 shadow-2xl border border-pinkapp-200 space-y-3">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 id="beanModalTitle" class="font-bold text-sm font-title text-pinkapp-900">新增咖啡豆到豆櫃</h3>
+        <button onclick="closeBeanModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">咖啡豆名稱</label>
+          <input type="text" id="mBeanName" placeholder="例如: 衣索比亞 耶加雪菲" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
         </div>
 
-        <form id="form-brew" onsubmit="saveBrewForm(event)" class="p-5 overflow-y-auto space-y-4 flex-1 text-xs">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">選擇咖啡豆 *</label>
-            <select id="input-brew-bean" required class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-bold">
-              <!-- Dynamically filled -->
+            <label class="block font-bold text-pinkapp-800 mb-0.5">產區 / 莊園</label>
+            <input type="text" id="mBeanOrigin" placeholder="耶加雪菲" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">烘焙度</label>
+            <select id="mBeanRoast" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2 py-1.5 text-pinkapp-900 focus:outline-none font-medium">
+              <option value="LIGHT">淺烘焙 (Light)</option>
+              <option value="MEDIUM">中烘焙 (Medium)</option>
+              <option value="DARK">深烘焙 (Dark)</option>
             </select>
           </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">沖煮器材</label>
-              <select id="input-brew-method" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-2.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
-                <option value="Hario V60">Hario V60</option>
-                <option value="Origami 摺紙濾杯">Origami 摺紙濾杯</option>
-                <option value="Kalita Wave 蛋糕濾杯">Kalita Wave 蛋糕濾杯</option>
-                <option value="AeroPress 愛樂壓">AeroPress 愛樂壓</option>
-                <option value="Espresso 意式濃縮">Espresso 意式濃縮</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">研磨刻度 (Grind)</label>
-              <input type="text" id="input-brew-grind" placeholder="如 C40 24咔" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2.5">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">咖啡粉量 (g)</label>
-              <input type="number" id="input-brew-dose" required value="15" step="0.1" oninput="autoCalcRatio()" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-bold">
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">注水量 (g)</label>
-              <input type="number" id="input-brew-water" required value="240" step="1" oninput="autoCalcRatio()" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-bold">
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">水溫 (°C)</label>
-              <input type="number" id="input-brew-temp" value="92" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-bold">
-            </div>
-          </div>
-
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">粉水比 (Ratio)</label>
-            <input type="text" id="input-brew-ratio" readonly value="1:16.0" class="w-full bg-pinkapp-100/70 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs text-pinkapp-900 font-extrabold">
-          </div>
-
-          <div class="bg-pinkapp-50/80 border border-pinkapp-200 rounded-2xl p-3 space-y-1.5 text-center">
-            <label class="block font-bold text-pinkapp-800">💖 星級風味評分</label>
-            <input type="hidden" id="input-brew-score" value="5">
-            <div id="brew-star-rating" class="flex justify-center items-center gap-1.5 cursor-pointer">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">風味筆記 / 評語</label>
-            <textarea id="input-brew-notes" rows="3" placeholder="如：花香顯著，酸質乾淨，入口有白桃甜感..." class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium"></textarea>
-          </div>
-
-          <div class="flex gap-2 pt-2">
-            <button type="button" onclick="closeModal('modal-brew')" class="w-1/2 bg-pinkapp-100 text-pinkapp-800 font-bold py-2.5 rounded-2xl hover:bg-pinkapp-200">取消</button>
-            <button type="submit" class="w-1/2 bg-pinkapp-600 text-white font-extrabold py-2.5 rounded-2xl hover:bg-pinkapp-700 shadow-pink-glow">保存日誌 ✨</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL 3: ADD GEAR -->
-    <div id="modal-gear" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-pinkapp-900/50 backdrop-blur-sm p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-      <div id="modal-gear-card" class="w-full max-w-lg bg-white text-pinkapp-900 rounded-t-[32px] sm:rounded-[32px] border border-pinkapp-200 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform translate-y-full transition-transform duration-300">
-        <div class="flex items-center justify-between border-b border-pinkapp-100 px-5 py-4 bg-pinkapp-50/50 shrink-0">
-          <div>
-            <h3 class="text-sm font-bold font-title text-pinkapp-900">🌸 新增咖啡裝備</h3>
-            <p class="text-[11px] text-pinkapp-600 font-medium">記錄磨豆機刻度或濾杯保養</p>
-          </div>
-          <button onclick="closeModal('modal-gear')" class="p-1 text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
 
-        <form id="form-gear" onsubmit="saveGearForm(event)" class="p-5 overflow-y-auto space-y-4 flex-1 text-xs">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">裝備名稱 *</label>
-            <input type="text" id="input-gear-name" required placeholder="例如：Comandante C40 MK4 磨豆機" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
+            <label class="block font-bold text-pinkapp-800 mb-0.5">剩餘重量 (g)</label>
+            <input type="number" id="mBeanWeight" value="250" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
           </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">裝備類別</label>
-              <select id="input-gear-type" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-2.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium">
-                <option value="GRINDER">磨豆機 (Grinder)</option>
-                <option value="DRIPPER">手沖濾杯 / 壺 (Dripper/Pot)</option>
-                <option value="ESPRESSO">意式咖啡機 (Espresso)</option>
-                <option value="SCALE">電子秤 / 溫控壺 (Scale/Kettle)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold mb-1 text-pinkapp-800">品牌 / 品牌商</label>
-              <input type="text" id="input-gear-brand" placeholder="如 Comandante" class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3 py-2 text-xs focus:outline-none focus:border-pinkapp-500">
-            </div>
-          </div>
-
           <div>
-            <label class="block font-bold mb-1 text-pinkapp-800">推薦刻度與保養備忘</label>
-            <textarea id="input-gear-note" rows="3" placeholder="如手沖推薦 24-26 咔，每兩個月需更換刀盤密封圈..." class="w-full bg-pinkapp-50/50 border border-pinkapp-200 rounded-2xl px-3.5 py-2 text-xs focus:outline-none focus:border-pinkapp-500 font-medium"></textarea>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">烘焙日期</label>
+            <input type="date" id="mBeanRoastDate" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2 py-1.5 text-pinkapp-900 focus:outline-none">
           </div>
-
-          <div class="flex gap-2 pt-2">
-            <button type="button" onclick="closeModal('modal-gear')" class="w-1/2 bg-pinkapp-100 text-pinkapp-800 font-bold py-2.5 rounded-2xl hover:bg-pinkapp-200">取消</button>
-            <button type="submit" class="w-1/2 bg-pinkapp-600 text-white font-extrabold py-2.5 rounded-2xl hover:bg-pinkapp-700 shadow-pink-glow">保存裝備 ✨</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL 4: INTERACTIVE BREWING TIMER -->
-    <div id="modal-timer" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-pinkapp-900/60 backdrop-blur-md p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-      <div id="modal-timer-card" class="w-full max-w-lg bg-white text-pinkapp-900 rounded-t-[36px] sm:rounded-[36px] border border-pinkapp-200 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transform translate-y-full transition-transform duration-300">
-        <div class="flex items-center justify-between border-b border-pinkapp-100 px-5 py-4 bg-pinkapp-50/60 shrink-0">
-          <div>
-            <h3 class="text-sm font-bold font-title text-pinkapp-900 flex items-center gap-1.5">
-              <i data-lucide="timer" class="w-4 h-4 text-pinkapp-500"></i> 🌸 手沖萃取黃金計時器
-            </h3>
-            <p class="text-[11px] text-pinkapp-600 font-medium">三段注水法：悶蒸 30s ➔ 第一段 ➔ 尾段萃取</p>
-          </div>
-          <button onclick="closeModal('modal-timer')" class="p-1 text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
 
-        <div class="p-6 flex flex-col items-center justify-center space-y-5 text-center flex-1">
-          <div class="space-y-1">
-            <span id="timer-stage-badge" class="text-[10px] font-black uppercase tracking-widest bg-pinkapp-500 text-white px-3.5 py-1 rounded-full shadow-pink-glow">🌸 準備 Ready</span>
-            <h2 id="timer-display" class="text-5xl font-black font-title text-pinkapp-900 tracking-wider my-3">00:00</h2>
-            <p id="timer-instruction" class="text-xs font-bold text-pinkapp-600">點擊下方粉紅按鈕，開啟手沖悶蒸階段 ✨</p>
-          </div>
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">處理法</label>
+          <input type="text" id="mBeanProcess" placeholder="例如: 水洗 / 雙重厭氧日曬" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+        </div>
 
-          <div class="w-full bg-pinkapp-100 h-3 rounded-full overflow-hidden p-0.5 border border-pinkapp-200">
-            <div id="timer-progress-bar" class="bg-gradient-to-r from-pinkapp-500 to-rose-400 h-full w-0 rounded-full transition-all duration-300"></div>
-          </div>
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">風味標籤 (逗號分隔)</label>
+          <input type="text" id="mBeanFlavors" placeholder="茉莉花, 水蜜桃, 柑橘" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+        </div>
+      </div>
 
-          <div class="flex items-center gap-4 pt-2">
-            <button id="btn-timer-reset" onclick="resetBrewTimer()" class="w-12 h-12 rounded-2xl bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 flex items-center justify-center shadow-sm">
-              <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-            </button>
-            <button id="btn-timer-toggle" onclick="toggleBrewTimer()" class="w-16 h-16 rounded-3xl bg-gradient-to-r from-pinkapp-500 via-rose-500 to-pinkapp-600 hover:from-pinkapp-600 hover:to-rose-600 text-white flex items-center justify-center shadow-pink-glow active:scale-95 transition-all">
-              <i data-lucide="play" id="timer-play-icon" class="w-7 h-7 fill-current ml-0.5"></i>
-            </button>
+      <button onclick="saveManualBean()" class="w-full bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-pink-glow">
+        確認儲存豆款
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal 4: Add Brew Log Modal -->
+  <div id="brewModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-5 shadow-2xl border border-pinkapp-200 space-y-3">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 class="font-bold text-sm font-title text-pinkapp-900">新增手沖日誌</h3>
+        <button onclick="closeBrewModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">選擇咖啡豆</label>
+          <select id="mBrewBeanSelect" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2.5 py-1.5 text-pinkapp-900 focus:outline-none font-medium">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">粉重 (g)</label>
+            <input type="number" id="mBrewDose" value="15" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">總注水量 (g)</label>
+            <input type="number" id="mBrewWater" value="225" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">水溫 (°C)</label>
+            <input type="number" id="mBrewTemp" value="92" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">評分 (1 - 5 星)</label>
+            <select id="mBrewScore" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2 py-1.5 text-pinkapp-900 focus:outline-none font-medium">
+              <option value="5">⭐⭐⭐⭐⭐ (5分)</option>
+              <option value="4">⭐⭐⭐⭐ (4分)</option>
+              <option value="3">⭐⭐⭐ (3分)</option>
+              <option value="2">⭐⭐ (2分)</option>
+              <option value="1">⭐ (1分)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">風味口感評語</label>
+          <input type="text" id="mBrewNotes" placeholder="例如: 花香明顯, 甜感極佳" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+        </div>
+      </div>
+
+      <button onclick="saveBrewLog()" class="w-full bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-pink-glow">
+        儲存沖煮日誌
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal 5: Add Gear Modal -->
+  <div id="gearModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-5 shadow-2xl border border-pinkapp-200 space-y-3">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 class="font-bold text-sm font-title text-pinkapp-900">新增咖啡裝備</h3>
+        <button onclick="closeGearModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">裝備名稱</label>
+          <input type="text" id="mGearName" placeholder="例如: Comandante C40" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">種類</label>
+            <select id="mGearType" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-2 py-1.5 text-pinkapp-900 focus:outline-none font-medium">
+              <option value="GRINDER">磨豆機</option>
+              <option value="DRIPPER">手沖濾杯/壺</option>
+              <option value="ESPRESSO">意式咖啡機</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-pinkapp-800 mb-0.5">常用刻度 / 備註</label>
+            <input type="text" id="mGearSetting" placeholder="24 Clicks" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
           </div>
         </div>
       </div>
-    </div>
 
+      <button onclick="saveGear()" class="w-full bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-pink-glow">
+        確認新增裝備
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal 6: API Keys & Backup Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-5 shadow-2xl border border-pinkapp-200 space-y-3">
+      <div class="flex justify-between items-center border-b border-pinkapp-100 pb-2">
+        <h3 class="font-bold text-sm font-title text-pinkapp-900 flex items-center gap-1.5">
+          <i data-lucide="settings" class="w-4 h-4 text-pinkapp-500"></i> API 設定 & 備份
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-pinkapp-400 hover:text-pinkapp-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-pinkapp-800 mb-0.5">Gemini 1.5 Flash API Key</label>
+          <input type="password" id="mKeyGemini" class="w-full bg-pinkapp-50 border border-pinkapp-200 rounded-xl px-3 py-1.5 text-pinkapp-900 focus:outline-none">
+          <p class="text-[9px] text-pinkapp-400 mt-0.5">若未填寫將自動採用離線 AI 智囊模擬運算</p>
+        </div>
+
+        <div class="pt-2 border-t border-pinkapp-100 flex gap-2">
+          <button onclick="exportAppData()" class="flex-1 bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> 匯出 JSON
+          </button>
+          <button onclick="document.getElementById('importFile').click()" class="flex-1 bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i> 匯入 JSON
+          </button>
+          <input type="file" id="importFile" accept=".json" class="hidden" onchange="importAppData(event)">
+        </div>
+      </div>
+
+      <button onclick="saveSettings()" class="w-full bg-pinkapp-600 hover:bg-pinkapp-700 text-white font-bold py-2.5 rounded-2xl text-xs transition-all shadow-pink-glow">
+        儲存設定
+      </button>
+    </div>
   </div>
 
   <script>
-    // App State Management
-    let currentView = 'home';
-    let beanFilter = 'ALL';
-    let gearFilter = 'ALL';
-    let selectedStarScore = 5;
-
-    // Supabase Realtime Instance
-    let supabaseClient = null;
-
-    // Initial Datasets
-    const defaultBeans = [
-      {
-        id: 'b1',
-        name: '拼配豆 (Golden Bean Champion)',
-        roaster: '弱水三十',
-        origin: 'Caturra / AA Top',
-        variety: 'Caturra / AA Top',
-        process: 'Lychee Culturing Washed / Natural',
-        roast: '中淺烘焙 Medium-Light',
-        weight: 200,
-        date: '2026-08-01',
-        price: 180,
-        notes: '荔枝, 花香, 黑加侖子果醬, 莓果, 桃',
-        flavor: { aroma: 4.8, acidity: 4.5, sweetness: 4.6, body: 3.5, finish: 4.5 }
+    // Global Application State with pre-loaded mock data
+    const state = {
+      apiKeys: {
+        gemini: ''
       },
-      {
-        id: 'b12',
-        name: '哥倫比亞 天堂莊園 艷夏花荔',
-        roaster: '精品特選',
-        origin: '哥倫比亞 Colombia',
-        variety: 'Castillo / Bourbon',
-        process: '雙重厭氧水洗 Double Anaerobic Washed',
-        roast: '淺度烘焙 Light',
-        weight: 150,
-        date: '2026-09-01',
-        price: 310,
-        notes: '桂花茶, 荔枝, 水蜜桃, 草莓',
-        flavor: { aroma: 5.0, acidity: 4.5, sweetness: 4.9, body: 3.4, finish: 4.8 }
-      },
-      {
-        id: 'b34',
-        name: '2026 哥斯大黎加 音樂家系列 莫札特',
-        roaster: "HOLD MY CAFE'",
-        origin: '哥斯大黎加 Canet',
-        variety: '黃卡杜艾 (Yellow Catuai)',
-        process: '葡萄乾蜜處理 Raisin Honey',
-        roast: '淺中烘焙 Medium-Light',
-        weight: 150,
-        date: '2026-07-20',
-        price: 250,
-        notes: '香水白百合, 玫瑰, 草莓軟糖, 醬香葡萄, 百香果, 荔枝',
-        flavor: { aroma: 5.0, acidity: 4.5, sweetness: 4.9, body: 3.5, finish: 4.8 }
+      beans: [
+        {
+          id: 'b1',
+          name: '衣索比亞 耶加雪菲 歌雪莉',
+          origin: '衣索比亞 耶加雪菲',
+          roast: 'LIGHT',
+          weight: 12, // Low stock < 15g triggers blend advisor!
+          roastDate: getPastDateStr(10), // Peak flavor
+          process: '淺焙 / 水洗',
+          flavors: ['茉莉花', '檸檬皮', '白桃'],
+          notes: '經典高海拔花果香，微酸清爽'
+        },
+        {
+          id: 'b2',
+          name: '哥倫比亞 薇拉 粉紅波旁',
+          origin: '哥倫比亞 薇拉',
+          roast: 'LIGHT',
+          weight: 160,
+          roastDate: getPastDateStr(14), // Peak flavor
+          process: '中淺焙 / 雙重厭氧日曬',
+          flavors: ['粉紅葡萄柚', '草莓香檳', '焦糖'],
+          notes: '甜感極佳，發酵感飽滿'
+        },
+        {
+          id: 'b3',
+          name: '肯亞 奈里 雙重水洗',
+          origin: '肯亞 奈里',
+          roast: 'MEDIUM',
+          weight: 220,
+          roastDate: getPastDateStr(3), // Resting
+          process: '中焙 / 雙重水洗',
+          flavors: ['黑加侖子', '烏梅', '西柚'],
+          notes: '果酸紮實，油脂感厚實'
+        }
+      ],
+      brews: [
+        {
+          id: 'br1',
+          beanName: '哥倫比亞 薇拉 粉紅波旁',
+          dose: 15,
+          water: 225,
+          temp: 92,
+          score: 5,
+          notes: '花香甜美，草莓香氣濃郁！',
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      gear: [
+        {
+          id: 'g1',
+          name: 'Comandante C40 MK4',
+          type: 'GRINDER',
+          setting: '手沖 24 Clicks / 意式 10 Clicks'
+        },
+        {
+          id: 'g2',
+          name: 'HARIO V60 02 濾杯',
+          type: 'DRIPPER',
+          setting: '流速快，適合花果香淺焙豆'
+        }
+      ],
+      activeView: 'home',
+      activeBeanFilter: 'ALL',
+      activeGearFilter: 'ALL',
+      scannedTempBean: null,
+      uploadedBase64Image: null,
+      timer: {
+        interval: null,
+        isRunning: false,
+        seconds: 0,
+        stage: 1
       }
-    ];
+    };
 
-    const defaultBrews = [
-      {
-        id: 'br1',
-        beanId: 'b12',
-        beanName: '哥倫比亞 天堂莊園 艷夏花荔',
-        method: 'Hario V60',
-        dose: 15,
-        water: 240,
-        temp: 93,
-        grind: 'C40 24咔',
-        ratio: '1:16.0',
-        score: 5,
-        notes: '高頻荔枝與桂花香非常出色！入口乾淨酸質明亮，尾韻水蜜桃甜感持久。',
-        timestamp: '2026-09-08 08:30'
-      }
-    ];
+    function getPastDateStr(daysAgo) {
+      const d = new Date();
+      d.setDate(d.getDate() - daysAgo);
+      return d.toISOString().split('T')[0];
+    }
 
-    const defaultGears = [
-      {
-        id: 'g1',
-        name: 'Comandante C40 MK4 頂級手搖磨豆機',
-        type: 'GRINDER',
-        brand: 'Comandante',
-        settingNote: '淺焙手沖 22-25咔 / 濃縮 10-12咔'
-      }
-    ];
-
-    const discoveryBeans = [
-      {
-        id: 'd1',
-        name: '肯亞 涅里 蜂鳥 G1 頂級水洗',
-        roaster: 'ONIBUS COFFEE Tokyo',
-        origin: '肯亞 Nyeri',
-        process: '水洗 Washed',
-        roast: '中淺烘焙 Medium-Light',
-        price: 190,
-        notes: '黑加侖子, 烏梅, 葡萄柚酸質, 紅茶餘韻',
-        description: '東京人氣名店 ONIBUS 招牌選豆，極致鮮明活潑的果酸層次感。'
-      },
-      {
-        id: 'd2',
-        name: '哥斯達黎加 璀璨莊園 珍稀黃蜜',
-        roaster: 'St. Ali Melbourne',
-        origin: '哥斯達黎加 Tarrazu',
-        process: '蜜處理 Honey',
-        roast: '淺度烘焙 Light',
-        price: 210,
-        notes: '黃桃, 焦糖, 烤杏仁, 蘋果酸',
-        description: '墨爾本精品咖啡先驅嚴選，溫潤滑順的蜜糖甜感與堅果餘香。'
-      }
-    ];
-
-    let beans = loadStorageData('beans', defaultBeans);
-    let brews = loadStorageData('brews', defaultBrews);
-    let gears = loadStorageData('gears', defaultGears);
-
-    function loadStorageData(key, fallback) {
-      const stored = localStorage.getItem('brewcraft_vbean_38_' + key);
-      if (!stored) {
-        localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(fallback));
-        return fallback;
-      }
+    // Helper: Web Audio API Synthesizer Chime for Timer
+    function playChimeSound() {
       try {
-        return JSON.parse(stored);
-      } catch (e) {
-        return fallback;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.6);
+      } catch(e) {
+        console.log('Audio chime unavailable', e);
       }
     }
 
-    function saveStorageData(key, data) {
-      localStorage.setItem('brewcraft_vbean_38_' + key, JSON.stringify(data));
-      syncToSupabase(key, data);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStateFromStorage();
+      updateClock();
+      setInterval(updateClock, 1000);
+      renderAll();
+      generateDailyRecommendation();
+    });
+
+    function updateClock() {
+      const clock = document.getElementById('clock-display');
+      if (clock) {
+        const now = new Date();
+        clock.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      }
     }
 
-    // --- SUPABASE & REALTIME IMPLEMENTATION ---
-    function initSupabase() {
-      const url = localStorage.getItem('brewcraft_sb_url');
-      const key = localStorage.getItem('brewcraft_sb_key');
-      if (url && key && window.supabase) {
+    function loadStateFromStorage() {
+      const saved = localStorage.getItem('brewcraft_pink_state');
+      if (saved) {
         try {
-          supabaseClient = window.supabase.createClient(url, key);
-          subscribeRealtime();
-        } catch (err) {
-          console.warn('Supabase Init Error:', err);
+          const parsed = JSON.parse(saved);
+          if (parsed.beans) state.beans = parsed.beans;
+          if (parsed.brews) state.brews = parsed.brews;
+          if (parsed.gear) state.gear = parsed.gear;
+          if (parsed.apiKeys) state.apiKeys = parsed.apiKeys;
+        } catch(e) {
+          console.warn('Failed to parse local storage', e);
         }
       }
     }
 
-    function subscribeRealtime() {
-      if (!supabaseClient) return;
-      supabaseClient
-        .channel('public-coffee-sync')
-        .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-          showToast('⚡ 雲端資料已即時更新！');
-          fetchFromSupabase();
-        })
-        .subscribe();
+    function saveStateToStorage() {
+      localStorage.setItem('brewcraft_pink_state', JSON.stringify({
+        beans: state.beans,
+        brews: state.brews,
+        gear: state.gear,
+        apiKeys: state.apiKeys
+      }));
     }
 
-    async function syncToSupabase(key, data) {
-      if (!supabaseClient) return;
-      try {
-        await supabaseClient.from('coffee_app_store').upsert({ id: key, payload: data });
-      } catch (err) {
-        console.error('Supabase Sync Error:', err);
-      }
-    }
-
-    async function fetchFromSupabase() {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient.from('coffee_app_store').select('*');
-        if (data && !error) {
-          data.forEach(item => {
-            if (item.id === 'beans') beans = item.payload;
-            if (item.id === 'brews') brews = item.payload;
-            if (item.id === 'gears') gears = item.payload;
-            localStorage.setItem('brewcraft_vbean_38_' + item.id, JSON.stringify(item.payload));
-          });
-          refreshCurrentView();
-        }
-      } catch (err) {
-        console.warn('Supabase fetch failed:', err);
-      }
-    }
-
-    function openKeyModal() {
-      document.getElementById('input-sb-url').value = localStorage.getItem('brewcraft_sb_url') || '';
-      document.getElementById('input-sb-key').value = localStorage.getItem('brewcraft_sb_key') || '';
-      openModal('modal-key');
-    }
-
-    function saveKeysForm(e) {
-      e.preventDefault();
-      const url = document.getElementById('input-sb-url').value.trim();
-      const key = document.getElementById('input-sb-key').value.trim();
-      localStorage.setItem('brewcraft_sb_url', url);
-      localStorage.setItem('brewcraft_sb_key', key);
-      initSupabase();
-      closeModal('modal-key');
-      showToast('🔑 Supabase 即時同步設定成功！');
-    }
-
-    // Toast Notification Banner
     function showToast(msg) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toast-msg');
-      toastMsg.textContent = msg;
-      toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
-      toast.classList.add('opacity-100', 'translate-y-0');
-      setTimeout(() => {
-        toast.classList.remove('opacity-100', 'translate-y-0');
-        toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
-      }, 2500);
+      if (toast && toastMsg) {
+        toastMsg.innerText = msg;
+        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+        }, 2800);
+      }
     }
 
-    function navigateTo(targetView) {
-      currentView = targetView;
+    function navigateTo(viewId) {
+      state.activeView = viewId;
+
+      // Views list
       const views = ['home', 'beans', 'brews', 'gear', 'discover'];
       views.forEach(v => {
-        const el = document.getElementById(v === 'home' ? 'view-home' : 'tab-' + v);
-        if (el) el.classList.add('hidden');
+        const viewEl = document.getElementById(`view-${v}`) || document.getElementById(`tab-${v}`);
+        const navBtn = document.getElementById(`nav-btn-${v}`);
+        if (viewEl) {
+          if (v === viewId) {
+            viewEl.classList.remove('hidden');
+          } else {
+            viewEl.classList.add('hidden');
+          }
+        }
+        if (navBtn) {
+          if (v === viewId) {
+            navBtn.className = 'nav-item flex flex-col items-center gap-0.5 text-pinkapp-600 font-black transition-colors py-1 px-2';
+          } else {
+            navBtn.className = 'nav-item flex flex-col items-center gap-0.5 text-pinkapp-300 hover:text-pinkapp-600 font-bold transition-colors py-1 px-2';
+          }
+        }
       });
 
-      const targetEl = document.getElementById(targetView === 'home' ? 'view-home' : 'tab-' + targetView);
-      if (targetEl) targetEl.classList.remove('hidden');
-
+      // Toggle back button visibility
       const backBtn = document.getElementById('global-back-btn');
-      const headerTitle = document.getElementById('header-title');
-      const headerSubtitle = document.getElementById('header-subtitle');
-      const quickBtnText = document.getElementById('quick-add-btn-text');
-
-      if (targetView === 'home') {
-        backBtn.classList.add('hidden');
-        headerTitle.innerHTML = `BrewCraft ✨ <span class="text-[9px] font-sans font-black uppercase tracking-widest bg-pinkapp-500 text-white px-2 py-0.5 rounded-full shadow-sm">Gen Alpha</span>`;
-        headerSubtitle.textContent = '🌸 Pink Aesthetic Coffee Stash';
-        quickBtnText.textContent = '新增紀錄';
-      } else {
-        backBtn.classList.remove('hidden');
-        if (targetView === 'beans') {
-          headerTitle.innerHTML = `粉紅豆櫃庫存 <span class="text-[10px] text-pinkapp-600 font-sans font-bold">(${beans.length})</span>`;
-          headerSubtitle.textContent = '返回首頁 ➔ 特選咖啡豆單';
-          quickBtnText.textContent = '新增咖啡豆';
-        } else if (targetView === 'brews') {
-          headerTitle.innerHTML = `黃金比例與日誌`;
-          headerSubtitle.textContent = '返回首頁 ➔ 沖煮淬鍊歷程';
-          quickBtnText.textContent = '新增日誌';
-        } else if (targetView === 'gear') {
-          headerTitle.innerHTML = `咖啡裝備與研磨卡`;
-          headerSubtitle.textContent = '返回首頁 ➔ 裝備與刻度';
-          quickBtnText.textContent = '新增裝備';
-        } else if (targetView === 'discover') {
-          headerTitle.innerHTML = `特選新豆推薦`;
-          headerSubtitle.textContent = '返回首頁 ➔ 探索名店嚴選';
-          quickBtnText.textContent = '探索新豆';
+      if (backBtn) {
+        if (viewId === 'home') {
+          backBtn.classList.add('hidden');
+        } else {
+          backBtn.classList.remove('hidden');
         }
       }
 
-      navButtonsUpdate(targetView);
-      refreshCurrentView();
-      document.getElementById('main-content').scrollTop = 0;
-    }
-
-    function navButtonsUpdate(targetView) {
-      const navButtons = ['home', 'beans', 'brews', 'gear', 'discover'];
-      navButtons.forEach(b => {
-        const btn = document.getElementById('nav-btn-' + b);
-        if (btn) {
-          btn.className = b === targetView 
-            ? "nav-item flex flex-col items-center gap-0.5 text-pinkapp-600 font-bold py-1 px-2"
-            : "nav-item flex flex-col items-center gap-0.5 text-pinkapp-300 hover:text-pinkapp-600 transition-colors py-1 px-2 font-bold";
-        }
-      });
-    }
-
-    function refreshCurrentView() {
-      lucide.createIcons();
-      updateHomeStats();
-      renderBeansList();
-      renderBrewsList();
-      renderGearList();
-      renderDiscoveriesList();
-      populateBeanOptions();
+      renderAll();
+      if (window.lucide) lucide.createIcons();
     }
 
     function handleHeaderQuickAdd() {
-      if (currentView === 'beans' || currentView === 'home') openBeanModal();
-      else if (currentView === 'brews') openBrewModal();
-      else if (currentView === 'gear') openGearModal();
-      else if (currentView === 'discover') showToast('請點擊下方推薦豆單嘅「+ 加入豆櫃」即可收藏！🌸');
+      if (state.activeView === 'beans') openBeanModal();
+      else if (state.activeView === 'brews') openBrewModal();
+      else if (state.activeView === 'gear') openGearModal();
+      else openBrewModal();
     }
 
-    function updateHomeStats() {
-      document.getElementById('home-stat-beans').textContent = `${beans.length} 款`;
-      document.getElementById('home-stat-brews').textContent = `${brews.length} 次`;
-      document.getElementById('home-stat-gears').textContent = `${gears.length} 件`;
-
-      const container = document.getElementById('home-recent-brews-container');
-      if (brews.length === 0) {
-        container.innerHTML = `<div class="bg-white border border-pinkapp-200 rounded-3xl p-4 text-center text-xs text-pinkapp-400 font-medium">尚未有沖煮紀錄 ✨</div>`;
-        return;
+    async function callGeminiApi(prompt, base64Image = null) {
+      const apiKey = state.apiKeys.gemini;
+      
+      if (!apiKey) {
+        // AI Fallback when no API Key is set
+        await new Promise(r => setTimeout(r, 1200));
+        if (base64Image) {
+          return JSON.stringify({
+            name: "櫻花特選 耶加雪菲 日曬",
+            origin: "衣索比亞 / 耶加雪菲",
+            process: "淺焙 / 日曬處理",
+            flavors: ["粉紅草莓", "水蜜桃", "茉莉花香"],
+            notes: "相機辨識完成！甜感高昂，極具代表性之粉紅花果香"
+          });
+        } else {
+          return "✨ AI 智囊建議：根據當前養豆日數（10天，正值 Peak 黃金期），建議使用 15g 粉搭配 225g 水（92°C），V60 三段注水。前段快速注入 40g 悶蒸 30 秒，可徹底釋放豐富的葡萄柚與花香甜感！";
+        }
       }
 
-      const recent = brews.slice(0, 2);
-      container.innerHTML = recent.map(b => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-3.5 shadow-soft-card flex justify-between items-center text-xs">
-          <div class="space-y-0.5">
-            <span class="text-[9px] text-pinkapp-600 font-bold uppercase tracking-wider">${b.method} • ${b.ratio}</span>
-            <h4 class="font-bold text-pinkapp-900 line-clamp-1 font-title">${b.beanName}</h4>
-            <p class="text-[10px] text-pinkapp-600/70 font-medium line-clamp-1">${b.notes || '10/10 Perfect Drip 💖'}</p>
-          </div>
-          <div class="text-right shrink-0 ml-2">
-            <span class="text-xs text-pinkapp-500 font-bold">${'★'.repeat(b.score)}</span>
-            <span class="text-[9px] text-pinkapp-400 font-bold block mt-0.5">${(b.timestamp||'').split(' ')[0]}</span>
-          </div>
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const contents = [{ parts: [] }];
+      if (prompt) contents[0].parts.push({ text: prompt });
+      if (base64Image) {
+        const cleanBase64 = base64Image.includes(',') ? base64Image.split(',')[1] : base64Image;
+        contents[0].parts.push({
+          inline_data: { mime_type: 'image/jpeg', data: cleanBase64 }
+        });
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Gemini 回傳錯誤 (${response.status})`);
+      }
+
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '未能取得 AI 回覆';
+    }
+
+    async function generateDailyRecommendation() {
+      const recCard = document.getElementById('dailyRecCard');
+      if (!recCard) return;
+
+      recCard.innerHTML = `
+        <div class="flex items-center gap-2 text-pinkapp-600 font-medium">
+          <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
+          <span>AI 正在分析豆櫃存量與養豆天數...</span>
         </div>
-      `).join('');
+      `;
+      if (window.lucide) lucide.createIcons();
+
+      const currentHour = new Date().getHours();
+      const prompt = `你是一位親切的精品咖啡管家。請根據用戶當前庫存：${JSON.stringify(state.beans)}，及當前時間：${currentHour}:00。選出「今日最佳沖煮咖啡豆」，簡短說明推薦理由（廣東話/中文），並給出水溫與粉水比建議。`;
+
+      try {
+        const reply = await callGeminiApi(prompt);
+        recCard.innerHTML = `<div class="whitespace-pre-line">${reply}</div>`;
+      } catch(err) {
+        recCard.innerHTML = `<p class="text-rose-500 font-bold">AI 計算失敗：${err.message}</p>`;
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderAll() {
+      updateStats();
+      renderBeansList();
+      renderBrewsList();
+      renderGearList();
+      renderDiscoveryList();
+      populateSelects();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function updateStats() {
+      const beanCount = state.beans.length;
+      const totalWeight = state.beans.reduce((acc, b) => acc + (parseInt(b.weight) || 0), 0);
+      
+      const now = new Date();
+      let peakCount = 0;
+      let lowCount = 0;
+
+      state.beans.forEach(b => {
+        const roast = new Date(b.roastDate || now);
+        const diffDays = Math.floor((now - roast) / (1000 * 60 * 60 * 24));
+        if (diffDays >= 7 && diffDays <= 30) peakCount++;
+        if (b.weight < 15) lowCount++;
+      });
+
+      // Update Header stats
+      document.getElementById('home-stat-beans').innerText = `${beanCount} 款`;
+      document.getElementById('home-stat-peak').innerText = `${peakCount} 款`;
+      document.getElementById('home-stat-brews').innerText = `${state.brews.length} 次`;
+      document.getElementById('home-stat-gears').innerText = `${state.gear.length} 件`;
+
+      // Update Stash stats
+      document.getElementById('stat-bean-count').innerText = `${beanCount} 款`;
+      document.getElementById('stat-bean-weight').innerText = `${totalWeight} g`;
+      document.getElementById('stat-bean-peak').innerText = `${peakCount} 款`;
+
+      // Toggle Blend Advisor Banner
+      const blendBanner = document.getElementById('blendAdvisorBanner');
+      if (blendBanner) {
+        if (lowCount > 0) blendBanner.classList.remove('hidden');
+        else blendBanner.classList.add('hidden');
+      }
+    }
+
+    function populateSelects() {
+      const recSelect = document.getElementById('recommend-bean-select');
+      const brewBeanSelect = document.getElementById('mBrewBeanSelect');
+      const coachSelect = document.getElementById('coachBeanSelect');
+
+      const options = state.beans.map(b => `<option value="${b.name}">${b.name} (${b.weight}g)</option>`).join('');
+
+      if (recSelect) recSelect.innerHTML = options || '<option>請先新增咖啡豆</option>';
+      if (brewBeanSelect) brewBeanSelect.innerHTML = options || '<option>請先新增咖啡豆</option>';
+      if (coachSelect) coachSelect.innerHTML = options || '<option>請先新增咖啡豆</option>';
     }
 
     function setBeanFilter(filter) {
-      beanFilter = filter;
+      state.activeBeanFilter = filter;
       document.querySelectorAll('.bean-filter-pill').forEach(btn => {
-        btn.className = "bean-filter-pill bg-white border border-pinkapp-200 text-pinkapp-700 px-3 py-1 rounded-xl font-bold text-[11px] transition-all";
+        if (btn.id === `bean-filter-${filter}`) {
+          btn.className = 'bean-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl font-bold text-[11px] transition-all';
+        } else {
+          btn.className = 'bean-filter-pill bg-white border border-pinkapp-200 text-pinkapp-700 px-3 py-1 rounded-xl font-bold text-[11px] transition-all';
+        }
       });
-      const activeBtn = document.getElementById('bean-filter-' + filter);
-      if (activeBtn) activeBtn.className = "bean-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl font-bold text-[11px] transition-all";
       renderBeansList();
     }
 
-    // --- BEANS LIST & CONFIRMATION FIX ---
     function renderBeansList() {
       const container = document.getElementById('beans-list-container');
       if (!container) return;
-      const searchInput = document.getElementById('bean-search-input');
-      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
-      const sort = document.getElementById('bean-sort-select').value;
 
-      let filtered = beans.filter(b => {
-        const matchesSearch = b.name.toLowerCase().includes(search) || 
-                              (b.origin && b.origin.toLowerCase().includes(search)) || 
-                              (b.roaster && b.roaster.toLowerCase().includes(search)) ||
-                              (b.notes && b.notes.toLowerCase().includes(search));
-        let matchesRoast = true;
-        if (beanFilter === 'LIGHT') matchesRoast = b.roast.includes('淺');
-        else if (beanFilter === 'MEDIUM') matchesRoast = b.roast.includes('中');
-        else if (beanFilter === 'DARK') matchesRoast = b.roast.includes('深');
+      const query = (document.getElementById('bean-search-input')?.value || '').toLowerCase();
+      const sort = document.getElementById('bean-sort-select')?.value || 'newest';
 
-        return matchesSearch && matchesRoast;
+      let filtered = state.beans.filter(b => {
+        const matchesQuery = b.name.toLowerCase().includes(query) || (b.origin && b.origin.toLowerCase().includes(query));
+        const matchesRoast = state.activeBeanFilter === 'ALL' || b.roast === state.activeBeanFilter;
+        return matchesQuery && matchesRoast;
       });
 
       if (sort === 'weight-desc') filtered.sort((a,b) => b.weight - a.weight);
       else if (sort === 'weight-asc') filtered.sort((a,b) => a.weight - b.weight);
 
-      document.getElementById('stat-bean-count').textContent = `${beans.length} 款`;
-      document.getElementById('stat-bean-weight').textContent = `${beans.reduce((acc,cur)=>acc+Number(cur.weight||0),0)} g`;
-      const uniqueRoasters = new Set(beans.map(b=>b.roaster).filter(Boolean));
-      document.getElementById('stat-bean-roasters').textContent = `${uniqueRoasters.size} 家`;
-
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="bg-white border border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400">未找到符合條件的咖啡豆 🌸</div>`;
+        container.innerHTML = `
+          <div class="bg-white border border-pinkapp-200 rounded-3xl p-8 text-center text-pinkapp-400 text-xs space-y-1">
+            <i data-lucide="archive" class="w-8 h-8 mx-auto text-pinkapp-300 mb-2"></i>
+            <p class="font-bold">目前沒有符合的咖啡豆</p>
+            <p>可點擊上方按鈕新增或用相機掃描包裝！</p>
+          </div>
+        `;
         return;
       }
 
-      container.innerHTML = filtered.map(b => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2.5 relative">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[9px] font-black uppercase tracking-wider text-pinkapp-500 bg-pinkapp-100 px-2 py-0.5 rounded-md">${b.roast}</span>
-              <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${b.name}</h3>
-              <p class="text-[11px] text-pinkapp-600/80 font-medium">${b.roaster || '精品烘焙'} • ${b.origin || '原產地'} (${b.process})</p>
-            </div>
-            <div class="text-right shrink-0">
-              <span class="text-xs font-black font-title text-pinkapp-600 block">${b.weight} g</span>
-              <span class="text-[9px] text-pinkapp-400 font-semibold">${b.price ? '$'+b.price : ''}</span>
-            </div>
-          </div>
+      const now = new Date();
+      container.innerHTML = filtered.map(bean => {
+        const roast = new Date(bean.roastDate || now);
+        const diffDays = Math.floor((now - roast) / (1000 * 60 * 60 * 24));
 
-          ${b.notes ? `
+        let badgeStyle = 'bg-pinkapp-100 text-pinkapp-700';
+        let statusText = `烘焙後 ${diffDays} 天`;
+
+        if (diffDays < 7) {
+          badgeStyle = 'bg-blue-100 text-blue-700 border border-blue-200';
+          statusText = `養豆期 Rest (${diffDays}天)`;
+        } else if (diffDays <= 30) {
+          badgeStyle = 'bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold';
+          statusText = `賞味黃金期 Peak (${diffDays}天)`;
+        } else {
+          badgeStyle = 'bg-amber-100 text-amber-800 border border-amber-200';
+          statusText = `需儘快飲用 (${diffDays}天)`;
+        }
+
+        const isLow = bean.weight < 15;
+
+        return `
+          <div class="bg-white border ${isLow ? 'border-rose-400' : 'border-pinkapp-200/90'} rounded-3xl p-4 shadow-soft-card space-y-2.5 relative overflow-hidden">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${badgeStyle}">${statusText}</span>
+                <h3 class="text-sm font-bold font-title text-pinkapp-900 mt-1">${bean.name}</h3>
+                <p class="text-[11px] text-pinkapp-600 font-medium">${bean.origin || '未知產區'} • ${bean.process || '淺焙'}</p>
+              </div>
+              <div class="text-right">
+                <span class="text-sm font-extrabold font-title ${isLow ? 'text-rose-500 animate-bounce block' : 'text-pinkapp-900'}">${bean.weight} g</span>
+                <div class="flex items-center gap-1 mt-1 justify-end">
+                  <button onclick="adjustBeanWeight('${bean.id}', -15)" class="w-6 h-6 rounded-lg bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold text-xs flex items-center justify-center">-15</button>
+                  <button onclick="adjustBeanWeight('${bean.id}', 15)" class="w-6 h-6 rounded-lg bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold text-xs flex items-center justify-center">+15</button>
+                </div>
+              </div>
+            </div>
+
             <div class="flex flex-wrap gap-1">
-              ${b.notes.split(',').map(n => `<span class="bg-pinkapp-50 text-pinkapp-700 text-[9px] font-bold px-2 py-0.5 rounded-lg border border-pinkapp-200/50">🌸 ${n.trim()}</span>`).join('')}
+              ${(bean.flavors || []).map(f => `<span class="px-2 py-0.5 rounded-full bg-pinkapp-50 border border-pinkapp-200 text-[10px] font-semibold text-pinkapp-700">${f}</span>`).join('')}
             </div>
-          ` : ''}
 
-          <div class="flex justify-between items-center pt-2 border-t border-pinkapp-100 text-[11px]">
-            <div class="flex gap-2">
-              <button onclick="deductBeanWeight('${b.id}', 15)" class="bg-pinkapp-100 hover:bg-pinkapp-200 text-pinkapp-700 font-bold px-2.5 py-1 rounded-xl text-[10px] transition-all">
-                -15g 沖煮
-              </button>
-              <button onclick="openBeanModal('${b.id}')" class="bg-pinkapp-50 hover:bg-pinkapp-100 text-pinkapp-600 font-bold px-2 py-1 rounded-xl text-[10px]">
-                <i data-lucide="edit-2" class="w-3 h-3 inline"></i> 編輯
-              </button>
+            <div class="border-t border-pinkapp-100 pt-2 flex items-center justify-between text-[10px] text-pinkapp-500">
+              <span>烘焙日: ${bean.roastDate || '未記錄'}</span>
+              <button onclick="deleteBean('${bean.id}')" class="text-rose-400 hover:text-rose-600 font-bold"><i data-lucide="trash-2" class="w-3.5 h-3.5 inline"></i> 刪除</button>
             </div>
-            <button onclick="deleteBean('${b.id}')" class="text-pinkapp-300 hover:text-rose-500 transition-colors p-1">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
           </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
+        `;
+      }).join('');
+      if (window.lucide) lucide.createIcons();
     }
 
-    // Modal Control & Form Fixes
-    function openModal(id) {
-      const modal = document.getElementById(id);
-      const card = document.getElementById(id + '-card');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      if (card) card.classList.remove('translate-y-full');
-    }
-
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      const card = document.getElementById(id + '-card');
-      if (card) card.classList.add('translate-y-full');
-      modal.classList.add('opacity-0', 'pointer-events-none');
-    }
-
-    function openBeanModal(id = null) {
-      const form = document.getElementById('form-bean');
-      form.reset();
-      if (id) {
-        const b = beans.find(x => x.id === id);
-        if (b) {
-          document.getElementById('bean-id').value = b.id;
-          document.getElementById('input-bean-name').value = b.name;
-          document.getElementById('input-bean-roaster').value = b.roaster || '';
-          document.getElementById('input-bean-origin').value = b.origin || '';
-          document.getElementById('input-bean-process').value = b.process || '水洗 Washed';
-          document.getElementById('input-bean-roast').value = b.roast || '淺度烘焙 Light';
-          document.getElementById('input-bean-weight').value = b.weight;
-          document.getElementById('input-bean-date').value = b.date || '';
-          document.getElementById('input-bean-price').value = b.price || '';
-          document.getElementById('input-bean-notes').value = b.notes || '';
-          document.getElementById('modal-bean-title').textContent = '🌸 編輯咖啡豆資料';
-        }
-      } else {
-        document.getElementById('bean-id').value = '';
-        document.getElementById('modal-bean-title').textContent = '🌸 新增咖啡豆至粉紅豆櫃';
-      }
-      openModal('modal-bean');
-    }
-
-    // CONFIRM KEY FIX: Form Submission Handler
-    function saveBeanForm(e) {
-      e.preventDefault();
-      const id = document.getElementById('bean-id').value;
-      const beanData = {
-        id: id || 'b_' + Date.now(),
-        name: document.getElementById('input-bean-name').value.trim(),
-        roaster: document.getElementById('input-bean-roaster').value.trim(),
-        origin: document.getElementById('input-bean-origin').value.trim(),
-        process: document.getElementById('input-bean-process').value,
-        roast: document.getElementById('input-bean-roast').value,
-        weight: Number(document.getElementById('input-bean-weight').value),
-        date: document.getElementById('input-bean-date').value,
-        price: document.getElementById('input-bean-price').value,
-        notes: document.getElementById('input-bean-notes').value.trim(),
-        flavor: {
-          aroma: document.getElementById('flavor-aroma').value,
-          acidity: document.getElementById('flavor-acidity').value,
-          sweetness: document.getElementById('flavor-sweetness').value,
-          body: document.getElementById('flavor-body').value,
-          finish: document.getElementById('flavor-finish').value,
-        }
-      };
-
-      if (id) {
-        const idx = beans.findIndex(x => x.id === id);
-        if (idx !== -1) beans[idx] = beanData;
-      } else {
-        beans.unshift(beanData);
-      }
-
-      saveStorageData('beans', beans);
-      closeModal('modal-bean');
-      showToast(id ? '✨ 咖啡豆更新成功！' : '💖 新咖啡豆已入櫃！');
-      refreshCurrentView();
-    }
-
-    function deductBeanWeight(id, amount) {
-      const b = beans.find(x => x.id === id);
-      if (b) {
-        b.weight = Math.max(0, b.weight - amount);
-        saveStorageData('beans', beans);
-        showToast(`已扣減 ${amount}g 豆量！剩餘 ${b.weight}g`);
-        refreshCurrentView();
+    function adjustBeanWeight(id, delta) {
+      const bean = state.beans.find(b => b.id === id);
+      if (bean) {
+        bean.weight = Math.max(0, bean.weight + delta);
+        saveStateToStorage();
+        renderAll();
       }
     }
 
     function deleteBean(id) {
-      if (confirm('確定要刪除這款咖啡豆？')) {
-        beans = beans.filter(x => x.id !== id);
-        saveStorageData('beans', beans);
-        showToast('已移除咖啡豆');
-        refreshCurrentView();
+      state.beans = state.beans.filter(b => b.id !== id);
+      saveStateToStorage();
+      renderAll();
+      showToast('已刪除該咖啡豆條目');
+    }
+
+    async function generateBlendSuggestion() {
+      const lowBeans = state.beans.filter(b => b.weight < 15);
+      const otherBeans = state.beans.filter(b => b.weight >= 15);
+      const blendCard = document.getElementById('blendOutputCard');
+      if (!blendCard) return;
+
+      blendCard.classList.remove('hidden');
+      blendCard.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> AI 正在調配特調拼豆方案...`;
+      if (window.lucide) lucide.createIcons();
+
+      const prompt = `請為以下殘量少於15g的殘豆：${JSON.stringify(lowBeans)}，搭配充足庫存豆：${JSON.stringify(otherBeans)} 設計一個獨家手沖 Blend 拼豆比例與研磨萃取建議。廣東話親切繁體字。`;
+
+      try {
+        const reply = await callGeminiApi(prompt);
+        blendCard.innerHTML = `<div class="whitespace-pre-line">${reply}</div>`;
+      } catch(e) {
+        blendCard.innerHTML = `拼豆生成失敗: ${e.message}`;
       }
-    }
-
-    // BREWS LOGIC
-    function openBrewModal() {
-      document.getElementById('form-brew').reset();
-      populateBeanOptions();
-      autoCalcRatio();
-      renderStarRating(5);
-      openModal('modal-brew');
-    }
-
-    function populateBeanOptions() {
-      const select1 = document.getElementById('input-brew-bean');
-      const select2 = document.getElementById('recommend-bean-select');
-      const options = beans.map(b => `<option value="${b.id}">${b.name} (${b.weight}g)</option>`).join('');
-      if (select1) select1.innerHTML = options || '<option value="">無現存咖啡豆</option>';
-      if (select2) select2.innerHTML = options || '<option value="">無現存咖啡豆</option>';
-      generateBrewRecommendation();
-    }
-
-    function autoCalcRatio() {
-      const dose = parseFloat(document.getElementById('input-brew-dose').value) || 0;
-      const water = parseFloat(document.getElementById('input-brew-water').value) || 0;
-      if (dose > 0 && water > 0) {
-        const ratio = (water / dose).toFixed(1);
-        document.getElementById('input-brew-ratio').value = `1:${ratio}`;
-      }
-    }
-
-    function renderStarRating(score) {
-      selectedStarScore = score;
-      document.getElementById('input-brew-score').value = score;
-      const container = document.getElementById('brew-star-rating');
-      container.innerHTML = [1,2,3,4,5].map(i => `
-        <i data-lucide="star" onclick="renderStarRating(${i})" class="w-6 h-6 cursor-pointer ${i <= score ? 'fill-pinkapp-500 text-pinkapp-500' : 'text-pinkapp-200'} transition-all"></i>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function saveBrewForm(e) {
-      e.preventDefault();
-      const beanId = document.getElementById('input-brew-bean').value;
-      const selectedBean = beans.find(b => b.id === beanId);
-      const dose = Number(document.getElementById('input-brew-dose').value);
-
-      const brewData = {
-        id: 'br_' + Date.now(),
-        beanId: beanId,
-        beanName: selectedBean ? selectedBean.name : '未知咖啡豆',
-        method: document.getElementById('input-brew-method').value,
-        grind: document.getElementById('input-brew-grind').value,
-        dose: dose,
-        water: Number(document.getElementById('input-brew-water').value),
-        temp: document.getElementById('input-brew-temp').value,
-        ratio: document.getElementById('input-brew-ratio').value,
-        score: Number(document.getElementById('input-brew-score').value),
-        notes: document.getElementById('input-brew-notes').value.trim(),
-        timestamp: new Date().toLocaleString()
-      };
-
-      brews.unshift(brewData);
-      saveStorageData('brews', brews);
-
-      if (selectedBean) {
-        deductBeanWeight(beanId, dose);
-      }
-
-      closeModal('modal-brew');
-      showToast('✨ 沖煮日誌保存成功！');
-      refreshCurrentView();
-    }
-
-    function renderBrewsList() {
-      const container = document.getElementById('brews-list-container');
-      if (!container) return;
-      const search = (document.getElementById('brew-search-input')?.value || '').toLowerCase().trim();
-      
-      let filtered = brews.filter(b => b.beanName.toLowerCase().includes(search) || (b.notes && b.notes.toLowerCase().includes(search)));
-      document.getElementById('brew-count-badge').textContent = filtered.length;
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="bg-white border border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400">尚無相關沖煮紀錄 ☕</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(b => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2 relative">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[9px] font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">${b.method} • ${b.ratio}</span>
-              <h3 class="text-xs font-bold font-title text-pinkapp-900 mt-1">${b.beanName}</h3>
-            </div>
-            <div class="text-right">
-              <span class="text-xs text-pinkapp-500 font-bold">${'★'.repeat(b.score)}</span>
-              <span class="text-[9px] text-pinkapp-400 font-medium block">${b.timestamp}</span>
-            </div>
-          </div>
-          <div class="grid grid-cols-3 gap-1 bg-pinkapp-50/50 p-2 rounded-xl text-[10px] font-bold text-pinkapp-800 text-center">
-            <div>粉量: ${b.dose}g</div>
-            <div>水量: ${b.water}g</div>
-            <div>水溫: ${b.temp}°C</div>
-          </div>
-          ${b.notes ? `<p class="text-[10px] text-pinkapp-700 bg-pinkapp-50/30 p-2 rounded-xl border border-pinkapp-100/50">${b.notes}</p>` : ''}
-        </div>
-      `).join('');
     }
 
     function generateBrewRecommendation() {
       const select = document.getElementById('recommend-bean-select');
-      const container = document.getElementById('recommendation-result');
-      if (!select || !container) return;
+      const result = document.getElementById('recommendation-result');
+      if (!select || !result) return;
 
-      const bean = beans.find(b => b.id === select.value);
+      const beanName = select.value;
+      const bean = state.beans.find(b => b.name === beanName);
+
       if (!bean) {
-        container.innerHTML = `<p class="text-center text-pink-100">請先新增咖啡豆至豆櫃 🌸</p>`;
+        result.innerHTML = `<p class="text-pink-100">請選擇有效咖啡豆</p>`;
         return;
       }
 
-      let ratio = "1:16";
-      let temp = "92°C";
-      let grind = "中細研磨 (EK43 8.0 / C40 24咔)";
-
-      if (bean.roast.includes('淺')) { ratio = "1:15.5"; temp = "93°C - 94°C"; }
-      else if (bean.roast.includes('深')) { ratio = "1:14.0"; temp = "86°C - 88°C"; }
-
-      container.innerHTML = `
-        <div class="grid grid-cols-3 gap-2 text-center font-bold">
-          <div class="bg-white/20 p-1.5 rounded-xl">黃金比: ${ratio}</div>
-          <div class="bg-white/20 p-1.5 rounded-xl">建議水溫: ${temp}</div>
-          <div class="bg-white/20 p-1.5 rounded-xl">粉量: 15g ➔ 240g</div>
+      result.innerHTML = `
+        <div class="flex justify-between items-center font-bold">
+          <span>🌸 推薦黃金比例：1 : 15</span>
+          <span class="text-pink-200">建議水溫：92°C</span>
         </div>
-        <p class="text-[10px] text-pink-100 font-medium text-center">💡 建議刻度: ${grind}</p>
+        <p class="text-[11px] leading-relaxed text-pink-100">
+          推薦粉量 15g，總注水量 225g。三段手沖：悶蒸 40g (30秒) ➔ 主要萃取注水至 150g ➔ 尾段萃取至 225g。
+        </p>
       `;
     }
 
-    // GEAR MANAGEMENT
-    function openGearModal() {
-      document.getElementById('form-gear').reset();
-      openModal('modal-gear');
+    function renderBrewsList() {
+      const container = document.getElementById('brews-list-container');
+      const badge = document.getElementById('brew-count-badge');
+      if (badge) badge.innerText = state.brews.length;
+      if (!container) return;
+
+      const query = (document.getElementById('brew-search-input')?.value || '').toLowerCase();
+      let filtered = state.brews.filter(b => b.beanName.toLowerCase().includes(query) || (b.notes && b.notes.toLowerCase().includes(query)));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white border border-pinkapp-200 rounded-3xl p-8 text-center text-pinkapp-400 text-xs space-y-1">
+            <i data-lucide="coffee" class="w-8 h-8 mx-auto text-pinkapp-300 mb-2"></i>
+            <p class="font-bold">尚無沖煮歷史日誌</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(log => `
+        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="text-xs font-bold font-title text-pinkapp-900">${log.beanName}</h4>
+              <p class="text-[10px] text-pinkapp-600 font-semibold mt-0.5">${log.dose}g 粉 ➔ ${log.water}g 水 (${log.temp}°C)</p>
+            </div>
+            <span class="text-xs font-bold text-amber-500">${'⭐'.repeat(log.score || 5)}</span>
+          </div>
+          <p class="text-xs text-pinkapp-800 bg-pinkapp-50 p-2 rounded-xl border border-pinkapp-100/80">${log.notes || '美味手沖一杯'}</p>
+          <div class="text-[9px] text-pinkapp-400 text-right">${log.date}</div>
+        </div>
+      `).join('');
+
+      // Also render home recent brews preview
+      const homeRecent = document.getElementById('home-recent-brews-container');
+      if (homeRecent) {
+        homeRecent.innerHTML = state.brews.slice(0, 2).map(log => `
+          <div class="bg-white border border-pinkapp-200/80 rounded-2xl p-3 text-xs flex justify-between items-center shadow-sm">
+            <div>
+              <span class="font-bold text-pinkapp-900 block">${log.beanName}</span>
+              <span class="text-[10px] text-pinkapp-600">${log.dose}g 粉 / ${log.water}g 水</span>
+            </div>
+            <span class="text-amber-500 text-xs">${'⭐'.repeat(log.score)}</span>
+          </div>
+        `).join('');
+      }
+      if (window.lucide) lucide.createIcons();
     }
 
-    function setGearFilter(f) {
-      gearFilter = f;
+    async function askBrewCoach() {
+      const bean = document.getElementById('coachBeanSelect').value;
+      const method = document.getElementById('coachMethod').value;
+      const issue = document.getElementById('coachTasteIssue').value;
+      const notes = document.getElementById('coachNotes').value;
+
+      const output = document.getElementById('coachAdviceOutput');
+      const body = document.getElementById('coachAdviceBody');
+
+      output.classList.remove('hidden');
+      body.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> AI 咖啡教練正在分析萃取狀態...`;
+      if (window.lucide) lucide.createIcons();
+
+      const prompt = `你是一位 SCA 認證手沖與意式咖啡大師。用戶沖煮【${bean}】（器具：${method}）時，口感反映：【${issue}】（當前參數：${notes || '無'}）。請給出 2 至 3 個具體修正步驟（如研磨度調粗/細幾格、水溫調整等）。廣東話親切繁體字。`;
+
+      try {
+        const advice = await callGeminiApi(prompt);
+        body.innerHTML = advice;
+      } catch(err) {
+        body.innerHTML = `診斷失敗：${err.message}`;
+      }
+    }
+
+    function setGearFilter(filter) {
+      state.activeGearFilter = filter;
       document.querySelectorAll('.gear-filter-pill').forEach(btn => {
-        btn.className = "gear-filter-pill bg-white border border-pinkapp-200 text-pinkapp-800 px-3 py-1 rounded-xl text-[11px] font-bold transition-all";
+        if (btn.id === `gear-filter-${filter}`) {
+          btn.className = 'gear-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold transition-all';
+        } else {
+          btn.className = 'gear-filter-pill bg-white border border-pinkapp-200 text-pinkapp-800 px-3 py-1 rounded-xl text-[11px] font-bold transition-all';
+        }
       });
-      const active = document.getElementById('gear-filter-' + f);
-      if (active) active.className = "gear-filter-pill active bg-pinkapp-600 text-white px-3 py-1 rounded-xl text-[11px] font-bold transition-all";
       renderGearList();
-    }
-
-    function saveGearForm(e) {
-      e.preventDefault();
-      const gearData = {
-        id: 'g_' + Date.now(),
-        name: document.getElementById('input-gear-name').value.trim(),
-        type: document.getElementById('input-gear-type').value,
-        brand: document.getElementById('input-gear-brand').value.trim(),
-        settingNote: document.getElementById('input-gear-note').value.trim()
-      };
-      gears.unshift(gearData);
-      saveStorageData('gears', gears);
-      closeModal('modal-gear');
-      showToast('🌸 新裝備已加入清單！');
-      refreshCurrentView();
     }
 
     function renderGearList() {
       const container = document.getElementById('gear-list-container');
       if (!container) return;
-      let filtered = gears.filter(g => gearFilter === 'ALL' || g.type === gearFilter);
+
+      let filtered = state.gear.filter(g => state.activeGearFilter === 'ALL' || g.type === state.activeGearFilter);
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="bg-white border border-pinkapp-200 rounded-3xl p-6 text-center text-xs text-pinkapp-400">未有相關裝備紀錄 🔧</div>`;
+        container.innerHTML = `<p class="text-center text-xs text-pinkapp-400 py-6">目前沒有咖啡裝備</p>`;
         return;
       }
 
       container.innerHTML = filtered.map(g => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-[9px] font-black uppercase text-fuchsia-600 bg-fuchsia-50 px-2 py-0.5 rounded-md border border-fuchsia-100">${g.type}</span>
-            <span class="text-[10px] font-bold text-pinkapp-400">${g.brand || ''}</span>
+        <div class="bg-white border border-pinkapp-200 rounded-3xl p-4 shadow-soft-card flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center font-bold">
+              <i data-lucide="wrench" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-pinkapp-900 font-title">${g.name}</h4>
+              <p class="text-[10px] text-pinkapp-600 font-semibold">${g.setting || '常用刻度未記錄'}</p>
+            </div>
           </div>
-          <h3 class="text-xs font-bold font-title text-pinkapp-900">${g.name}</h3>
-          ${g.settingNote ? `<p class="text-[10px] text-pinkapp-700 bg-pinkapp-50/50 p-2 rounded-xl border border-pinkapp-100 font-medium">${g.settingNote}</p>` : ''}
+          <button onclick="deleteGear('${g.id}')" class="text-rose-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
       `).join('');
+      if (window.lucide) lucide.createIcons();
     }
 
-    // DISCOVERY MANAGEMENT
-    function renderDiscoveriesList() {
+    function deleteGear(id) {
+      state.gear = state.gear.filter(g => g.id !== id);
+      saveStateToStorage();
+      renderAll();
+    }
+
+    function renderDiscoveryList() {
       const container = document.getElementById('discovery-list-container');
       if (!container) return;
-      container.innerHTML = discoveryBeans.map(d => `
-        <div class="bg-white border border-pinkapp-200/80 rounded-3xl p-4 shadow-soft-card space-y-2">
+
+      const drops = [
+        {
+          name: '東京 Fuglen - 肯亞 AA 甜果爆發',
+          origin: '肯亞 Nyeri',
+          process: '淺焙 / 雙重水洗',
+          flavors: ['黑加侖子', '玫瑰果', '紅糖'],
+          roaster: 'Fuglen Tokyo'
+        },
+        {
+          name: '墨爾本 St Ali - 依索比亞 耶加雪菲',
+          origin: '衣索比亞 Yirgacheffe',
+          process: '淺焙 / 日曬',
+          flavors: ['藍莓香檳', '柑橘', '蜜糖'],
+          roaster: 'St Ali Coffee'
+        }
+      ];
+
+      container.innerHTML = drops.map(d => `
+        <div class="bg-white border border-pinkapp-200/90 rounded-3xl p-4 shadow-soft-card space-y-2">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[9px] font-black text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">${d.roaster}</span>
-              <h3 class="text-xs font-bold font-title text-pinkapp-900 mt-1">${d.name}</h3>
+              <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">${d.roaster}</span>
+              <h4 class="text-xs font-bold font-title text-pinkapp-900 mt-1">${d.name}</h4>
+              <p class="text-[10px] text-pinkapp-600">${d.origin} • ${d.process}</p>
             </div>
-            <span class="text-xs font-bold text-pinkapp-600">$${d.price}</span>
-          </div>
-          <p class="text-[10px] text-pinkapp-600 font-medium leading-relaxed">${d.description}</p>
-          <div class="flex justify-between items-center pt-2">
-            <span class="text-[9px] font-bold text-pinkapp-500">🌸 ${d.notes}</span>
-            <button onclick="addDiscoveryToStash('${d.id}')" class="bg-pinkapp-600 hover:bg-pinkapp-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-pink-glow active:scale-95 transition-all">
-              + 加入豆櫃
+            <button onclick="importDiscoveryBean('${d.name}', '${d.origin}', '${d.process}')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] shadow-sm flex items-center gap-1">
+              <i data-lucide="download" class="w-3 h-3"></i> 收藏入櫃
             </button>
+          </div>
+          <div class="flex gap-1">
+            ${d.flavors.map(f => `<span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-[9px] font-semibold">${f}</span>`).join('')}
           </div>
         </div>
       `).join('');
+      if (window.lucide) lucide.createIcons();
     }
 
-    function addDiscoveryToStash(id) {
-      const item = discoveryBeans.find(d => d.id === id);
-      if (!item) return;
+    function importDiscoveryBean(name, origin, process) {
       const newBean = {
         id: 'b_' + Date.now(),
-        name: item.name,
-        roaster: item.roaster,
-        origin: item.origin,
-        process: item.process,
-        roast: item.roast,
-        weight: 200,
-        date: new Date().toISOString().split('T')[0],
-        price: item.price,
-        notes: item.notes,
-        flavor: { aroma: 4.8, acidity: 4.5, sweetness: 4.5, body: 3.5, finish: 4.5 }
+        name: name,
+        origin: origin,
+        roast: 'LIGHT',
+        weight: 250,
+        roastDate: new Date().toISOString().split('T')[0],
+        process: process,
+        flavors: ['靈感新豆'],
+        notes: '從靈感豆單一鍵導入'
       };
-      beans.unshift(newBean);
-      saveStorageData('beans', beans);
-      showToast('💖 已成功將新豆加入粉紅豆櫃！');
+      state.beans.unshift(newBean);
+      saveStateToStorage();
+      renderAll();
+      showToast('已成功收藏該豆款入粉紅豆櫃！');
       navigateTo('beans');
     }
 
-    // TIMER SYSTEM
-    let timerInterval = null;
-    let timerSeconds = 0;
-    let isTimerRunning = false;
+    async function exploreCoffeeShops() {
+      const query = document.getElementById('shopSearchQuery').value;
+      const container = document.getElementById('exploreResults');
+      container.innerHTML = `<p class="text-xs text-pinkapp-600"><i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> 正在搜尋高評價精品咖啡店...</p>`;
+      if (window.lucide) lucide.createIcons();
+
+      try {
+        const prompt = `請推介 2 間位於【${query}】的高評價獨立精品咖啡店及其招牌咖啡豆款，簡短列表說明。廣東話繁體字。`;
+        const res = await callGeminiApi(prompt);
+        container.innerHTML = `<div class="p-3 bg-pinkapp-50 rounded-2xl border border-pinkapp-200 text-xs leading-relaxed whitespace-pre-line text-pinkapp-900">${res}</div>`;
+      } catch(e) {
+        container.innerHTML = `<p class="text-xs text-rose-500">搜尋出錯: ${e.message}</p>`;
+      }
+    }
 
     function openTimerModal() {
-      resetBrewTimer();
-      openModal('modal-timer');
+      document.getElementById('timerModal').classList.remove('hidden');
+      resetTimer();
+    }
+    function closeTimerModal() {
+      document.getElementById('timerModal').classList.add('hidden');
+      if (state.timer.interval) clearInterval(state.timer.interval);
+      state.timer.isRunning = false;
     }
 
-    function toggleBrewTimer() {
-      const playIcon = document.getElementById('timer-play-icon');
-      if (isTimerRunning) {
-        clearInterval(timerInterval);
-        isTimerRunning = false;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+    function toggleTimer() {
+      const btn = document.getElementById('timerToggleBtn');
+      if (state.timer.isRunning) {
+        clearInterval(state.timer.interval);
+        state.timer.isRunning = false;
+        btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i> 繼續計時`;
       } else {
-        isTimerRunning = true;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
-        timerInterval = setInterval(() => {
-          timerSeconds++;
-          updateTimerUI();
-        }, 1000);
+        state.timer.isRunning = true;
+        btn.innerHTML = `<i data-lucide="pause" class="w-4 h-4"></i> 暫停計時`;
+        state.timer.interval = setInterval(tickTimer, 1000);
       }
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    function resetBrewTimer() {
-      clearInterval(timerInterval);
-      isTimerRunning = false;
-      timerSeconds = 0;
+    function resetTimer() {
+      if (state.timer.interval) clearInterval(state.timer.interval);
+      state.timer.seconds = 0;
+      state.timer.stage = 1;
+      state.timer.isRunning = false;
       updateTimerUI();
-      const playIcon = document.getElementById('timer-play-icon');
-      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
-      lucide.createIcons();
+      document.getElementById('btnSaveTimerLog').classList.add('hidden');
+      const btn = document.getElementById('timerToggleBtn');
+      if (btn) btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i> 開始計時`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function tickTimer() {
+      state.timer.seconds++;
+      if (state.timer.seconds === 30) {
+        state.timer.stage = 2;
+        playChimeSound();
+      } else if (state.timer.seconds === 90) {
+        state.timer.stage = 3;
+        playChimeSound();
+      } else if (state.timer.seconds === 150) {
+        clearInterval(state.timer.interval);
+        state.timer.isRunning = false;
+        playChimeSound();
+        showToast('🎉 手沖萃取完成！金杯黃金比例！');
+        document.getElementById('btnSaveTimerLog').classList.remove('hidden');
+      }
+      updateTimerUI();
     }
 
     function updateTimerUI() {
-      const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
-      const secs = String(timerSeconds % 60).padStart(2, '0');
-      document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+      const display = document.getElementById('timerDisplay');
+      const stageLabel = document.getElementById('timerStageLabel');
+      const targetWater = document.getElementById('timerTargetWater');
 
-      const badge = document.getElementById('timer-stage-badge');
-      const instruction = document.getElementById('timer-instruction');
-      const progressBar = document.getElementById('timer-progress-bar');
+      const mins = Math.floor(state.timer.seconds / 60).toString().padStart(2, '0');
+      const secs = (state.timer.seconds % 60).toString().padStart(2, '0');
+      if (display) display.innerText = `${mins}:${secs}`;
 
-      let progress = Math.min(100, (timerSeconds / 150) * 100);
-      if (progressBar) progressBar.style.width = `${progress}%`;
-
-      if (timerSeconds === 0) {
-        badge.textContent = '🌸 準備 Ready';
-        instruction.textContent = '點擊粉紅按鈕開啟悶蒸階段 ✨';
-      } else if (timerSeconds <= 30) {
-        badge.textContent = '🌸 悶蒸 Bloom (30s)';
-        instruction.textContent = '注入約 30-40g 熱水，等待咖啡粉膨脹釋放香氣';
-      } else if (timerSeconds <= 90) {
-        badge.textContent = '💧 第一段注水 Pour 1';
-        instruction.textContent = '由內向外順時針繞圈注入至 140g 熱水';
-      } else if (timerSeconds <= 150) {
-        badge.textContent = '✨ 尾段萃取 Pour 2';
-        instruction.textContent = '中心大水流補水至目標 240g，等待濾乾完成';
+      if (state.timer.stage === 1) {
+        if (stageLabel) stageLabel.innerText = 'Stage 1: 悶蒸 Bloom (0-30s)';
+        if (targetWater) targetWater.innerText = '目標水重：40g 水';
+      } else if (state.timer.stage === 2) {
+        if (stageLabel) stageLabel.innerText = 'Stage 2: 主要萃取 (30s-1m30s)';
+        if (targetWater) targetWater.innerText = '目標水重：累計 150g 水';
       } else {
-        badge.textContent = '💖 萃取完成 Complete';
-        instruction.textContent = '享受你嘅 Perfect Pink Coffee！✨';
+        if (stageLabel) stageLabel.innerText = 'Stage 3: 尾段萃取 (1m30s-2m30s)';
+        if (targetWater) targetWater.innerText = '目標水重：累計 225g 水';
       }
     }
 
-    // App Initialization
-    window.addEventListener('DOMContentLoaded', () => {
-      initSupabase();
-      refreshCurrentView();
+    function saveTimerToBrewLog() {
+      const firstBean = state.beans[0]?.name || '手沖金杯咖啡';
+      const newLog = {
+        id: 'br_' + Date.now(),
+        beanName: firstBean,
+        dose: 15,
+        water: 225,
+        temp: 92,
+        score: 5,
+        notes: '使用 3段金杯手沖計時器完成萃取！',
+        date: new Date().toISOString().split('T')[0]
+      };
+      state.brews.unshift(newLog);
+      saveStateToStorage();
+      renderAll();
+      closeTimerModal();
+      showToast('已存入沖泡日誌！');
+    }
+
+    function openAiScannerModal() {
+      document.getElementById('aiScannerModal').classList.remove('hidden');
+    }
+    function closeAiScannerModal() {
+      document.getElementById('aiScannerModal').classList.add('hidden');
+    }
+
+    document.getElementById('dropZone')?.addEventListener('click', () => {
+      document.getElementById('imageInput').click();
     });
+
+    function handleImageSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        state.uploadedBase64Image = evt.target.result;
+        document.getElementById('imagePreview').src = evt.target.result;
+        document.getElementById('imagePreview').classList.remove('hidden');
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('btnStartScan').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function processImageAnalysis() {
+      if (!state.uploadedBase64Image) return;
+
+      const container = document.getElementById('scanResultContainer');
+      const badge = document.getElementById('scanStatusBadge');
+      const body = document.getElementById('scanOutputBody');
+
+      container.classList.remove('hidden');
+      badge.innerText = 'Gemini Vision AI 分析中...';
+      body.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> 正在辨識包裝文字、處理法與產區...`;
+      if (window.lucide) lucide.createIcons();
+
+      try {
+        const prompt = `分析此咖啡豆包裝圖片，簡短輸出 JSON: {"name":"","origin":"","process":"","flavors":["",""],"notes":""}`;
+        const raw = await callGeminiApi(prompt, state.uploadedBase64Image);
+        
+        let beanData = {};
+        try {
+          const clean = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+          beanData = JSON.parse(clean);
+        } catch(err) {
+          beanData = {
+            name: "AI 辨識精選豆",
+            origin: "衣索比亞",
+            process: "淺焙 / 日曬",
+            flavors: ["柑橘", "蜜糖"],
+            notes: raw
+          };
+        }
+
+        state.scannedTempBean = beanData;
+        badge.innerText = '辨識完成！';
+        body.innerHTML = `
+          <p class="font-bold text-pinkapp-900">${beanData.name}</p>
+          <p class="text-[10px] text-pinkapp-600">${beanData.origin} • ${beanData.process}</p>
+          <div class="flex gap-1 pt-1">${(beanData.flavors || []).map(f => `<span class="px-1.5 py-0.5 bg-pinkapp-100 text-pinkapp-700 rounded-full text-[9px] font-bold">${f}</span>`).join('')}</div>
+        `;
+      } catch(err) {
+        badge.innerText = '辨識失敗';
+        body.innerHTML = `<p class="text-rose-500">${err.message}</p>`;
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function saveScannedBeanToInventory() {
+      if (!state.scannedTempBean) return;
+      const newBean = {
+        id: 'b_' + Date.now(),
+        name: state.scannedTempBean.name || '相片辨識咖啡豆',
+        origin: state.scannedTempBean.origin || '自訂產區',
+        roast: 'LIGHT',
+        weight: 250,
+        roastDate: new Date().toISOString().split('T')[0],
+        process: state.scannedTempBean.process || '淺焙',
+        flavors: state.scannedTempBean.flavors || ['相片掃描'],
+        notes: state.scannedTempBean.notes || 'AI 相片包裝掃描導入'
+      };
+      state.beans.unshift(newBean);
+      saveStateToStorage();
+      renderAll();
+      closeAiScannerModal();
+      showToast('已存入粉紅豆櫃！');
+      navigateTo('beans');
+    }
+
+    function openBeanModal() { document.getElementById('beanModal').classList.remove('hidden'); document.getElementById('mBeanRoastDate').value = new Date().toISOString().split('T')[0]; }
+    function closeBeanModal() { document.getElementById('beanModal').classList.add('hidden'); }
+
+    function saveManualBean() {
+      const name = document.getElementById('mBeanName').value.trim();
+      if (!name) { showToast('請輸入咖啡豆名稱'); return; }
+
+      const newBean = {
+        id: 'b_' + Date.now(),
+        name: name,
+        origin: document.getElementById('mBeanOrigin').value.trim() || '自訂產區',
+        roast: document.getElementById('mBeanRoast').value,
+        weight: parseInt(document.getElementById('mBeanWeight').value) || 200,
+        roastDate: document.getElementById('mBeanRoastDate').value,
+        process: document.getElementById('mBeanProcess').value.trim() || '淺焙',
+        flavors: document.getElementById('mBeanFlavors').value.split(',').map(s => s.trim()).filter(Boolean),
+        notes: '手動新增'
+      };
+
+      state.beans.unshift(newBean);
+      saveStateToStorage();
+      renderAll();
+      closeBeanModal();
+      showToast('手動新增咖啡豆成功！');
+    }
+
+    function openBrewModal() { document.getElementById('brewModal').classList.remove('hidden'); }
+    function closeBrewModal() { document.getElementById('brewModal').classList.add('hidden'); }
+
+    function saveBrewLog() {
+      const beanName = document.getElementById('mBrewBeanSelect').value;
+      const dose = parseInt(document.getElementById('mBrewDose').value) || 15;
+      const water = parseInt(document.getElementById('mBrewWater').value) || 225;
+      const temp = parseInt(document.getElementById('mBrewTemp').value) || 92;
+      const score = parseInt(document.getElementById('mBrewScore').value) || 5;
+      const notes = document.getElementById('mBrewNotes').value.trim();
+
+      const newLog = {
+        id: 'br_' + Date.now(),
+        beanName: beanName,
+        dose: dose,
+        water: water,
+        temp: temp,
+        score: score,
+        notes: notes || '美味手沖一杯',
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      state.brews.unshift(newLog);
+
+      // Auto deduct weight from beans
+      const targetBean = state.beans.find(b => b.name === beanName);
+      if (targetBean) {
+        targetBean.weight = Math.max(0, targetBean.weight - dose);
+      }
+
+      saveStateToStorage();
+      renderAll();
+      closeBrewModal();
+      showToast('沖煮日誌已儲存！');
+    }
+
+    function openGearModal() { document.getElementById('gearModal').classList.remove('hidden'); }
+    function closeGearModal() { document.getElementById('gearModal').classList.add('hidden'); }
+
+    function saveGear() {
+      const name = document.getElementById('mGearName').value.trim();
+      if (!name) { showToast('請輸入裝備名稱'); return; }
+
+      const newGear = {
+        id: 'g_' + Date.now(),
+        name: name,
+        type: document.getElementById('mGearType').value,
+        setting: document.getElementById('mGearSetting').value.trim()
+      };
+
+      state.gear.unshift(newGear);
+      saveStateToStorage();
+      renderAll();
+      closeGearModal();
+      showToast('裝備已新增！');
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+      document.getElementById('mKeyGemini').value = state.apiKeys.gemini || '';
+    }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+    function saveSettings() {
+      state.apiKeys.gemini = document.getElementById('mKeyGemini').value.trim();
+      saveStateToStorage();
+      closeSettingsModal();
+      showToast('API Key 設定已儲存！');
+    }
+
+    function exportAppData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "brewcraft_pink_backup.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('已匯出 JSON 備份檔');
+    }
+
+    function importAppData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.beans) state.beans = parsed.beans;
+          if (parsed.brews) state.brews = parsed.brews;
+          if (parsed.gear) state.gear = parsed.gear;
+          saveStateToStorage();
+          renderAll();
+          closeSettingsModal();
+          showToast('成功匯入備份數據！');
+        } catch(err) {
+          showToast('JSON 格式不正確');
+        }
+      };
+      reader.readAsText(file);
+    }
   </script>
 </body>
 </html>
